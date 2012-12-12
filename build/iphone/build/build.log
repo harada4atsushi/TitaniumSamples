@@ -1,0 +1,92 @@
+================================================================================
+Appcelerator Titanium Diagnostics Build Log
+The contents of this file are useful to send to Appcelerator Support if
+reporting an issue to help us understand your environment, build settings
+and aid in debugging. Please attach this log to any issue that you report.
+================================================================================
+
+Starting build at 12/12/12 13:09
+
+Build details:
+
+   timestamp=11/09/12 12:46
+   module_apiversion=2
+   version=2.1.4
+   githash=51f2c64
+
+
+Script arguments:
+   /Users/haradaatsushi/Library/Application Support/Titanium/mobilesdk/osx/2.1.4.GA/iphone/builder.py
+   simulator
+   6.0
+   /Users/haradaatsushi/personal/source_code/self/titanium_workspace/TitaniumSamples
+   jp.ne.nama.samples
+   samples
+   iphone
+   iphone
+   
+
+Building from: /Users/haradaatsushi/Library/Application Support/Titanium/mobilesdk/osx/2.1.4.GA/iphone
+Platform: Darwin Kernel Version 11.4.2: Thu Aug 23 16:25:48 PDT 2012; root:xnu-1699.32.7~1/RELEASE_X86_64
+
+Xcode path is: /Applications/Xcode.app/Contents/Developer
+
+
+githash=51f2c64, existing_git_hash=51f2c64
+writing contents of /Users/haradaatsushi/personal/source_code/self/titanium_workspace/TitaniumSamples/build/iphone/project.xcconfig:
+
+TI_VERSION=2.1.4.GA
+TI_SDK_DIR=/Users/haradaatsushi/Library/Application Support/Titanium/mobilesdk/osx/$(TI_VERSION)/iphone
+TI_APPID=jp.ne.nama.samples
+OTHER_LDFLAGS[sdk=iphoneos*]=$(inherited) -weak_framework iAd
+OTHER_LDFLAGS[sdk=iphonesimulator*]=$(inherited) -weak_framework iAd
+#include "module"
+
+old contents
+
+
+Generated the following stylecode code:
+
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+	<dict>
+		<key>classes</key>
+		<dict>
+</dict>
+
+		<key>classes_density</key>
+		<dict>
+</dict>
+
+		<key>ids</key>
+		<dict>
+</dict>
+
+		<key>ids_density</key>
+		<dict>
+</dict>
+
+		<key>tags</key>
+		<dict>
+</dict>
+
+		<key>tags_density</key>
+		<dict>
+</dict>
+
+	</dict>
+</plist>
+Finishing build
+
+Exception detected in script:
+Traceback (most recent call last):
+  File "/Users/haradaatsushi/Library/Application Support/Titanium/mobilesdk/osx/2.1.4.GA/iphone/builder.py", line 1428, in main
+    os.waitpid(sim.pid,0)
+  File "/Users/haradaatsushi/Library/Application Support/Titanium/mobilesdk/osx/2.1.4.GA/iphone/builder.py", line 1362, in handler
+    kill_simulator()
+  File "/Users/haradaatsushi/Library/Application Support/Titanium/mobilesdk/osx/2.1.4.GA/iphone/builder.py", line 77, in kill_simulator
+    run.run(['/usr/bin/killall',"iPhone Simulator"],True)
+  File "/Users/haradaatsushi/Library/Application Support/Titanium/mobilesdk/osx/2.1.4.GA/iphone/run.py", line 8, in run
+    sys.stdout.flush()
+IOError: [Errno 32] Broken pipe
