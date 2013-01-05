@@ -1,6 +1,6 @@
 /**
  * Appcelerator Titanium Mobile
- * Copyright (c) 2009-2012 by Appcelerator, Inc. All Rights Reserved.
+ * Copyright (c) 2009-2013 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
  * 
@@ -18,7 +18,7 @@
 
 @implementation TiTextField
 
-@synthesize leftButtonPadding, rightButtonPadding, paddingLeft, paddingRight, becameResponder, maxLength;
+@synthesize leftButtonPadding, rightButtonPadding, paddingLeft, paddingRight, becameResponder;
 
 -(void)configure
 {
@@ -29,7 +29,6 @@
 	rightButtonPadding = 0;
 	paddingLeft = 0;
 	paddingRight = 0;
-    maxLength = -1;
 	[super setLeftViewMode:UITextFieldViewModeAlways];
 	[super setRightViewMode:UITextFieldViewModeAlways];	
 }
@@ -41,6 +40,35 @@
 	RELEASE_TO_NIL(leftView);
 	RELEASE_TO_NIL(rightView);
 	[super dealloc];
+}
+
+-(void)setTouchHandler:(TiUIView*)handler
+{
+    //Assign only. No retain
+    touchHandler = handler;
+}
+
+- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event 
+{
+    [touchHandler processTouchesBegan:touches withEvent:event];
+    [super touchesBegan:touches withEvent:event];
+}
+- (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event 
+{
+    [touchHandler processTouchesMoved:touches withEvent:event];
+    [super touchesMoved:touches withEvent:event];
+}
+
+- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event 
+{
+    [touchHandler processTouchesEnded:touches withEvent:event];
+    [super touchesEnded:touches withEvent:event];
+}
+
+- (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event 
+{
+    [touchHandler processTouchesCancelled:touches withEvent:event];
+    [super touchesCancelled:touches withEvent:event];
 }
 
 -(UIView*)newPadView:(CGFloat)width height:(CGFloat)height
@@ -166,7 +194,7 @@
 
 -(BOOL)canBecomeFirstResponder
 {
-	return YES;
+    return self.isEnabled;
 }
 
 -(BOOL)resignFirstResponder
@@ -183,15 +211,17 @@
 
 -(BOOL)becomeFirstResponder
 {
-	becameResponder = YES;
-	
-	if ([super becomeFirstResponder])
-	{
-		[self repaintMode];
-		return YES;
-	}
-	return NO;
+    if (self.canBecomeFirstResponder) {
+        if ([super becomeFirstResponder])
+        {
+            becameResponder = YES;
+            [self repaintMode];
+            return YES;
+        }
+    }
+    return NO;
 }
+
 
 -(BOOL)isFirstResponder
 {
@@ -268,6 +298,7 @@
 		((TiTextField *)textWidgetView).textAlignment = UITextAlignmentLeft;
 		((TiTextField *)textWidgetView).contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
 		[(TiTextField *)textWidgetView configure];
+		[(TiTextField *)textWidgetView setTouchHandler:self];
 		[self addSubview:textWidgetView];
 		self.clipsToBounds = YES;
 		WARN_IF_BACKGROUND_THREAD_OBJ;	//NSNotificationCenter is not threadsafe!
@@ -300,10 +331,18 @@
 	[self textWidgetView].rightButtonPadding = [TiUtils floatValue:value];
 }
 
+-(void)setEditable_:(id)value
+{
+    BOOL _trulyEnabled = ([TiUtils boolValue:value def:YES] && [TiUtils boolValue:[[self proxy] valueForUndefinedKey:@"enabled"] def:YES]);
+    [[self textWidgetView] setEnabled:_trulyEnabled];
+}
+
 -(void)setEnabled_:(id)value
 {
-	[[self textWidgetView] setEnabled:[TiUtils boolValue:value]];
+    BOOL _trulyEnabled = ([TiUtils boolValue:value def:YES] && [TiUtils boolValue:[[self proxy] valueForUndefinedKey:@"editable"] def:YES]);
+    [[self textWidgetView] setEnabled:_trulyEnabled];
 }
+
 
 -(void)setBackgroundImage_:(id)image
 {
@@ -419,30 +458,35 @@
 	}
 }
 
--(void)setValue_:(id)value
-{
-    NSString* string = [TiUtils stringValue:value];
-    NSInteger maxLength = [[self textWidgetView] maxLength];
-    if (maxLength > -1 && [string length] > maxLength) {
-        string = [string substringToIndex:maxLength];
-    }
-    [super setValue_:string];
-}
-
--(void)setMaxLength_:(id)value
-{
-    NSInteger maxLength = [TiUtils intValue:value def:-1];
-    [[self textWidgetView] setMaxLength:maxLength];
-    [self setValue_:[[self textWidgetView] text]];
-    [[self proxy] replaceValue:value forKey:@"maxLength" notification:NO];
-}
-
 #pragma mark Public Method
 
 -(BOOL)hasText
 {
 	UITextField *f = [self textWidgetView];
 	return [[f text] length] > 0;
+}
+
+-(void)setSelectionFrom:(id)start to:(id)end 
+{
+    if([TiUtils isIOS5OrGreater]) {
+        UITextField *textField = [self textWidgetView];
+        if ([textField conformsToProtocol:@protocol(UITextInput)]) {
+            if([self becomeFirstResponder]){
+                UITextPosition *beginning = textField.beginningOfDocument;
+                UITextPosition *startPos = [textField positionFromPosition:beginning offset:[TiUtils intValue: start]];
+                UITextPosition *endPos = [textField positionFromPosition:beginning offset:[TiUtils intValue: end]];
+                UITextRange *textRange;
+                textRange = [textField textRangeFromPosition:startPos toPosition:endPos];
+                [textField setSelectedTextRange:textRange];
+            }
+            
+        } else {
+            DebugLog(@"UITextField does not conform with UITextInput protocol. Ignore");
+        }
+    } else {
+        DebugLog(@"Selecting text is only supported with iOS5+");
+    }
+    
 }
 
 #pragma mark UITextFieldDelegate
@@ -458,15 +502,15 @@
 
 - (BOOL)textFieldShouldBeginEditing:(UITextField *)textField;        // return NO to disallow editing.
 {
-	return YES;
+    return YES;
 }
 
 - (BOOL)textField:(UITextField *)tf shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
 {
     NSString *curText = [[tf text] stringByReplacingCharactersInRange:range withString:string];
    
-    NSInteger maxLength = [[self textWidgetView] maxLength];    
     if ( (maxLength > -1) && ([curText length] > maxLength) ) {
+        [self setValue_:curText];
         return NO;
     }
 

@@ -1,6 +1,6 @@
 /**
  * Appcelerator Titanium Mobile
- * Copyright (c) 2009-2012 by Appcelerator, Inc. All Rights Reserved.
+ * Copyright (c) 2009-2013 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
  * 
@@ -351,9 +351,6 @@ NSString * const TI_DB_VERSION = @"1";
 	
 	NSString *sql = [NSString stringWithFormat:@"INSERT INTO pending_events VALUES (?)"];
 	NSError *error = nil;
-	PLSqlitePreparedStatement * statement = (PLSqlitePreparedStatement *) [database prepareStatement:sql error:&error];
-	[statement bindParameters:[NSArray arrayWithObjects:value,nil]];
-    
     // Don't lock until we need to
     [lock lock];
     if (database==nil)
@@ -362,6 +359,9 @@ NSString * const TI_DB_VERSION = @"1";
 		[lock unlock];
 		return;
 	}
+	PLSqlitePreparedStatement * statement = (PLSqlitePreparedStatement *) [database prepareStatement:sql error:&error];
+	[statement bindParameters:[NSArray arrayWithObjects:value,nil]];
+    
     
 	[database beginTransaction];
 	[statement executeUpdate];
@@ -513,7 +513,6 @@ NSString * const TI_DB_VERSION = @"1";
 						   TI_APPLICATION_DEPLOYTYPE,@"deploytype",
 						   @"iphone",@"os",
 						   version,@"version",
-						   VAL_OR_NSNULL(username),@"un",
 						   TI_APPLICATION_VERSION,@"app_version",
 						   os,@"osver",
 						   VAL_OR_NSNULL(nettype),@"nettype",

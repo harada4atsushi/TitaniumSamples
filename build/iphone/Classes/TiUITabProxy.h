@@ -1,6 +1,6 @@
 /**
  * Appcelerator Titanium Mobile
- * Copyright (c) 2009-2012 by Appcelerator, Inc. All Rights Reserved.
+ * Copyright (c) 2009-2013 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
  * 
@@ -20,7 +20,7 @@
 @private
 	UINavigationController *controller;
 	TiUITabController *rootController;
-	
+	//This is an assign only property. TabGroup retains instances of tab.
 	TiUITabGroupProxy *tabGroup;
 	TiUITabController *current;
     
@@ -40,8 +40,7 @@
 -(UINavigationController*)controller;
 -(void)setTabGroup:(TiUITabGroupProxy*)proxy;
 -(void)removeFromTabGroup;
-- (void)closeTab;
--(void)closeWindow:(TiWindowProxy *)window animated:(BOOL)animated removeTab:(BOOL)removeTab;
+-(void)closeWindow:(TiWindowProxy *)window animated:(BOOL)animated;
 -(void)windowClosing:(TiWindowProxy*)window animated:(BOOL)animated;
 
 #pragma mark Public APIs
@@ -58,8 +57,8 @@
 - (void)handleDidBlur:(NSDictionary *)event;
 - (void)handleWillFocus;
 - (void)handleDidFocus:(NSDictionary *)event;
-- (void)handleWillShowViewController:(UIViewController *)viewController;
-- (void)handleDidShowViewController:(UIViewController *)viewController;
+- (void)handleWillShowViewController:(UIViewController *)viewController animated:(BOOL)animated;
+- (void)handleDidShowViewController:(UIViewController *)viewController animated:(BOOL)animated;
 
 @end
 

@@ -14,6 +14,7 @@ dependencies: \
   /Users/haradaatsushi/personal/source_code/self/titanium_workspace/TitaniumSamples/build/iphone/headers/TiCore/TiContextRefPrivate.h \
   /Users/haradaatsushi/personal/source_code/self/titanium_workspace/TitaniumSamples/build/iphone/Classes/KrollCallback.h \
   /Users/haradaatsushi/personal/source_code/self/titanium_workspace/TitaniumSamples/build/iphone/Classes/KrollObject.h \
+  /Users/haradaatsushi/personal/source_code/self/titanium_workspace/TitaniumSamples/build/iphone/Classes/TiBindingRunLoop.h \
   /Users/haradaatsushi/personal/source_code/self/titanium_workspace/TitaniumSamples/build/iphone/Classes/TiHost.h \
   /Users/haradaatsushi/personal/source_code/self/titanium_workspace/TitaniumSamples/build/iphone/Classes/Bridge.h \
   /Users/haradaatsushi/personal/source_code/self/titanium_workspace/TitaniumSamples/build/iphone/Classes/TiStylesheet.h \
@@ -34,4 +35,5 @@ dependencies: \
   /Users/haradaatsushi/personal/source_code/self/titanium_workspace/TitaniumSamples/build/iphone/Classes/TiPoint.h \
   /Users/haradaatsushi/personal/source_code/self/titanium_workspace/TitaniumSamples/build/iphone/Classes/LayoutConstraint.h \
   /Users/haradaatsushi/personal/source_code/self/titanium_workspace/TitaniumSamples/build/iphone/Classes/TiGradient.h \
-  /Users/haradaatsushi/personal/source_code/self/titanium_workspace/TitaniumSamples/build/iphone/Classes/TiRect.h
+  /Users/haradaatsushi/personal/source_code/self/titanium_workspace/TitaniumSamples/build/iphone/Classes/TiRect.h \
+  /Users/haradaatsushi/personal/source_code/self/titanium_workspace/TitaniumSamples/build/iphone/Classes/TiBindingEvent.h

@@ -1,6 +1,6 @@
 /**
  * Appcelerator Titanium Mobile
- * Copyright (c) 2009-2012 by Appcelerator, Inc. All Rights Reserved.
+ * Copyright (c) 2009-2013 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
  * 
@@ -64,6 +64,9 @@
 #ifdef USE_TI_UIIPADSPLITWINDOW
 	#import "TiUIiPadSplitWindowProxy.h"
 #endif
+#ifdef USE_TI_UIIPHONEALERTDIALOGSTYLE
+ 	#import "TiUIiPhoneAlertDialogStyleProxy.h"
+#endif
 
 @implementation TiUIiPhoneProxy
 
@@ -113,6 +116,9 @@ RELEASE_TO_NIL(x); \
 #endif
 #ifdef USE_TI_UIIPHONETABLEVIEWCELLSELECTIONSTYLE
 	FORGET_AND_RELEASE(tableViewCellSelectionStyle);
+#endif
+#ifdef USE_TI_UIIPHONEALERTDIALOGSTYLE
+	FORGET_AND_RELEASE(alertDialogStyle);
 #endif
 	[super dealloc];
 }
@@ -166,6 +172,9 @@ RELEASE_TO_NIL(x); \
 #endif
 #ifdef USE_TI_UIIPHONETABLEVIEWCELLSELECTIONSTYLE
 	DEFINE_SUBPROXY(TableViewCellSelectionStyle,tableViewCellSelectionStyle);
+#endif
+#ifdef USE_TI_UIIPHONEALERTDIALOGSTYLE
+	DEFINE_SUBPROXY(AlertDialogStyle, alertDialogStyle);
 #endif
 
 #define RESPONDS_TO_3_2_STATUSBAR_SELECTOR \
@@ -345,6 +354,9 @@ MAKE_SYSTEM_PROP(MODAL_PRESENTATION_CURRENT_CONTEXT,UIModalPresentationCurrentCo
 #endif
 #ifdef USE_TI_UIIPHONETABLEVIEWCELLSELECTIONSTYLE
 	FORGET_AND_RELEASE(tableViewCellSelectionStyle);
+#endif
+#ifdef USE_TI_UIIPHONEALERTDIALOGSTYLE
+	FORGET_AND_RELEASE(alertDialogStyle);
 #endif
 	[super didReceiveMemoryWarning:notification];
 }

@@ -1,6 +1,6 @@
 /**
  * Appcelerator Titanium Mobile
- * Copyright (c) 2009-2012 by Appcelerator, Inc. All Rights Reserved.
+ * Copyright (c) 2009-2013 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
  * 
@@ -189,6 +189,15 @@ NSString* const DATA_IFACE = @"pdp_ip0";
 -(NSString*)runtime
 {
 	return @"javascriptcore";
+}
+
+-(NSString*)manufacturer
+{
+#if TARGET_IPHONE_SIMULATOR
+    return @"unknown";
+#else
+    return @"apple";
+#endif
 }
 
 -(NSString*)locale

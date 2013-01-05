@@ -34,6 +34,11 @@ extern NSString * const TI_APPLICATION_ANALYTICS;
 	return adview;
 }
 
+- (id)accessibilityElement
+{
+	return [self adview];
+}
+
 -(CGFloat)contentHeightForWidth:(CGFloat)value
 {
 	ADBannerView *view = [self adview];

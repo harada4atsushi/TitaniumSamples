@@ -1,6 +1,6 @@
 /**
  * Appcelerator Titanium Mobile
- * Copyright (c) 2009-2012 by Appcelerator, Inc. All Rights Reserved.
+ * Copyright (c) 2009-2013 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
  * 
@@ -47,6 +47,8 @@
 @property(nonatomic,readonly) NSNumber* keyboardVisible;
 @property(nonatomic,readwrite,assign) NSNumber* disableNetworkActivityIndicator;
 
+@property (nonatomic, readonly) NSString *EVENT_ACCESSIBILITY_ANNOUNCEMENT;
+@property (nonatomic, readonly) NSString *EVENT_ACCESSIBILITY_CHANGED;
 
 #ifdef USE_TI_APPIOS
 @property(nonatomic,readonly)			TiProxy* iOS;

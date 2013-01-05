@@ -1,6 +1,6 @@
 /**
  * Appcelerator Titanium Mobile
- * Copyright (c) 2009-2012 by Appcelerator, Inc. All Rights Reserved.
+ * Copyright (c) 2009-2013 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
  * 
@@ -19,12 +19,14 @@
 #import "KrollContext.h"
 #import "TiDebugger.h"
 #import "TiConsole.h"
+#import "TiExceptionHandler.h"
 
 #ifdef KROLL_COVERAGE
 # include "KrollCoverage.h"
 #endif
 
 extern BOOL const TI_APPLICATION_ANALYTICS;
+extern NSString * const TI_APPLICATION_DEPLOYTYPE;
 
 NSString * samples$ModuleRequireFormat = @"(function(exports){"
 		"var __OXP=exports;var module={'exports':exports};%@;\n"
@@ -369,12 +371,6 @@ CFMutableSetRef	krollBridgeRegistry = nil;
 	return [context evalJSAndWait:code];
 }
 
-- (void)scriptError:(NSString*)message
-{
-    evaluationError = YES;
-	[[TiApp app] showModalError:message];
-}
-
 -(BOOL)evaluationError
 {
     return evaluationError;
@@ -419,15 +415,15 @@ CFMutableSetRef	krollBridgeRegistry = nil;
 	{
 		NSLog(@"[ERROR] Error loading path: %@, %@",path,error);
 		
+		evaluationError = YES;
+		TiScriptError *scriptError = nil;
 		// check for file not found a give a friendlier message
-		if ([error code]==260 && [error domain]==NSCocoaErrorDomain)
-		{
-			[self scriptError:[NSString stringWithFormat:@"Could not find the file %@",[path lastPathComponent]]];
+		if ([error code]==260 && [error domain]==NSCocoaErrorDomain) {
+			scriptError = [[TiScriptError alloc] initWithMessage:[NSString stringWithFormat:@"Could not find the file %@",[path lastPathComponent]] sourceURL:nil lineNo:0];
+		} else {
+			scriptError = [[TiScriptError alloc] initWithMessage:[NSString stringWithFormat:@"Error loading script %@. %@",[path lastPathComponent],[error description]] sourceURL:nil lineNo:0];
 		}
-		else 
-		{
-			[self scriptError:[NSString stringWithFormat:@"Error loading script %@. %@",[path lastPathComponent],[error description]]];
-		}
+		[[TiExceptionHandler defaultExceptionHandler] reportScriptError:scriptError];
 		return;
 	}
 	
@@ -437,17 +433,12 @@ CFMutableSetRef	krollBridgeRegistry = nil;
 	TiStringRef jsURL = TiStringCreateWithUTF8CString(urlCString);
 	
 	// validate script
-	// TODO: we do not need to do this in production app
-	if (!TiCheckScriptSyntax(jsContext,jsCode,jsURL,1,&exception))
-	{
-		id excm = [KrollObject toID:context value:exception];
-		DebugLog(@"[ERROR] Syntax Error = %@",[TiUtils exceptionMessage:excm]);
-		[self scriptError:[TiUtils exceptionMessage:excm]];
+	if (![TI_APPLICATION_DEPLOYTYPE isEqualToString:@"production"]) {
+		TiCheckScriptSyntax(jsContext,jsCode,jsURL,1,&exception);
 	}
 	
 	// only continue if we don't have any exceptions from above
-	if (exception == NULL)
-	{
+	if (exception == NULL) {
         if ([[self host] debugMode]) {
             TiDebuggerBeginScript(context_,urlCString);
         }
@@ -457,16 +448,20 @@ CFMutableSetRef	krollBridgeRegistry = nil;
         if ([[self host] debugMode]) {
             TiDebuggerEndScript(context_);
         }
-
-		if (exception!=NULL)
-		{
-			id excm = [KrollObject toID:context value:exception];
-			DebugLog(@"[ERROR] Script Error = %@.",[TiUtils exceptionMessage:excm]);
-			[self scriptError:[TiUtils exceptionMessage:excm]];
-		}
-        else {
+		if (exception == NULL) {
             evaluationError = NO;
         }
+	}
+	if (exception != NULL) {
+		id excm = [KrollObject toID:context value:exception];
+		TiScriptError *scriptError = nil;
+		if ([excm isKindOfClass:[NSDictionary class]]) {
+			scriptError = [[TiScriptError alloc] initWithDictionary:excm];
+		} else {
+			scriptError = [[TiScriptError alloc] initWithMessage:[excm description] sourceURL:path lineNo:0];
+		}
+		evaluationError = YES;
+		[[TiExceptionHandler defaultExceptionHandler] reportScriptError:scriptError];
 	}
 	
 	TiStringRelease(jsCode);
@@ -498,16 +493,16 @@ CFMutableSetRef	krollBridgeRegistry = nil;
 	[event release];
 }
 
--(void)enqueueEvent:(NSString*)type forProxy:(TiProxy *)proxy withObject:(id)obj withSource:(id)source
+-(void)enqueueEvent:(NSString*)type forProxy:(TiProxy *)proxy withObject:(id)obj
 {
-	KrollObject * eventKrollObject = [self krollObjectForProxy:proxy];
-	KrollObject * sourceObject = [self krollObjectForProxy:source];
-	if (sourceObject == nil)
-	{
-		sourceObject = eventKrollObject;
-	}
-	KrollEvent * newEvent = [[KrollEvent alloc] initWithType:type ForKrollObject:eventKrollObject
-			 eventObject:obj thisObject:sourceObject];
+	KrollObject* eventKrollObject = [self krollObjectForProxy:proxy];
+    
+	KrollEvent * newEvent = [[KrollEvent alloc] 
+                             initWithType:type 
+                             ForKrollObject:eventKrollObject
+                             eventObject:obj 
+                             thisObject:eventKrollObject];
+    
 	[context enqueue:newEvent];
 	[newEvent release];
 }
@@ -566,8 +561,12 @@ CFMutableSetRef	krollBridgeRegistry = nil;
 	TiStringRef prop = TiStringCreateWithCFString((CFStringRef) _samplesNS);
 	TiStringRef prop2 = TiStringCreateWithCFString((CFStringRef) [NSString stringWithFormat:@"%si","T"]);
 	TiObjectRef globalRef = TiContextGetGlobalObject(jsContext);
-	TiObjectSetProperty(jsContext, globalRef, prop, tiRef, NULL, NULL);
-	TiObjectSetProperty(jsContext, globalRef, prop2, tiRef, NULL, NULL);
+	TiObjectSetProperty(jsContext, globalRef, prop, tiRef,
+                        kTiPropertyAttributeDontDelete | kTiPropertyAttributeDontEnum, 
+                        NULL);
+	TiObjectSetProperty(jsContext, globalRef, prop2, tiRef, 
+                        kTiPropertyAttributeDontDelete | kTiPropertyAttributeDontEnum, 
+                        NULL);
 	TiStringRelease(prop);
 	TiStringRelease(prop2);	
     
@@ -735,9 +734,14 @@ CFMutableSetRef	krollBridgeRegistry = nil;
 	
 	if (exception != NULL) {
 		id excm = [KrollObject toID:context value:exception];
-		DebugLog(@"[ERROR] Script Error = %@",[TiUtils exceptionMessage:excm]);
-		fflush(stderr);
-		@throw excm;
+		TiScriptError *scriptError = nil;
+		if ([excm isKindOfClass:[NSDictionary class]]) {
+			scriptError = [[TiScriptError alloc] initWithDictionary:excm];
+		} else {
+			scriptError = [[TiScriptError alloc] initWithMessage:[excm description] sourceURL:[sourceURL absoluteString] lineNo:0];
+		}
+		[[TiExceptionHandler defaultExceptionHandler] reportScriptError:scriptError];
+		return nil;
 	}
 	/*
 	 *	In order to work around the underlying issue of TIMOB-2392, we must
@@ -771,60 +775,124 @@ CFMutableSetRef	krollBridgeRegistry = nil;
 	TiModule* module = nil;
 	NSData *data = nil;
 	NSString *filepath = nil;
-	
-	// first check to see if we've already loaded the module
-	// and if so, return it
-	if (modules!=nil)
+    NSString* fullPath = nil;
+    NSURL* oldURL = [self currentURL];
+    
+    // Check the position of the first '/', which will give some information
+    // about resource resolution and if the path is absolute.
+    //
+    // TODO: This violates commonjs 1.1 and there is some ongoing discussion about whether or not
+    // it should make a path absolute.
+    NSRange separatorLocation = [path rangeOfString:@"/"];
+    NSString* workingPath = [oldURL relativePath];
+    if (separatorLocation.location == 0) {
+        fullPath = [path substringFromIndex:1];
+    }
+    else {
+        fullPath = path;
+    }
+    NSString* moduleID = nil;
+    NSString* leadingComponent = [[fullPath pathComponents] objectAtIndex:0];
+    BOOL isAbsolute = !([leadingComponent isEqualToString:@"."] || [leadingComponent isEqualToString:@".."]);
+    
+    
+    if (isAbsolute) {
+        moduleID = [[fullPath pathComponents] objectAtIndex:0];
+    }
+    else {
+        fullPath = (workingPath != nil) ? 
+            [[workingPath stringByAppendingPathComponent:[fullPath stringByStandardizingPath]] stringByStandardizingPath] : 
+            [fullPath stringByStandardizingPath];
+        moduleID = [[fullPath pathComponents] objectAtIndex:0];
+    }
+    
+
+	// Now that we have the full path, we can check and see if the module was loaded,
+    // and return it if available.
+    if (modules!=nil)
 	{
-		module = [modules objectForKey:path];
+		module = [modules objectForKey:fullPath];
 		if (module!=nil)
 		{
 			return module;
 		}
 	}
-	
-	//If it's a relative path or has folder path bits, it cannot
-	//be a class name.
-	if (![path hasPrefix:@"."] && ([path rangeOfString:@"/"].location == NSNotFound)) {
-		// now see if this is a plus module that we need to dynamically
-		// load and create
-		NSString *moduleClassName = [self pathToModuleClassName:path];
-		id moduleClass = NSClassFromString(moduleClassName);
-		if (moduleClass!=nil)
-		{
-			module = [[moduleClass alloc] _initWithPageContext:self];
+
+    separatorLocation = [fullPath rangeOfString:@"/"];
+    NSString* moduleClassName = [self pathToModuleClassName:moduleID];
+    Class moduleClass = NSClassFromString(moduleClassName);
+
+    if (moduleClass != nil) {
+        // We have a module to load resources from! Now we need to determine if
+        // it's a base module (which should be cached) or a pure JS resource
+        // stored on the module.
+
+        module = [modules objectForKey:moduleID];
             
-            // Load any JS associated with the module if there, so that it
-            // can be exported
-			if ([module isJSModule])
-			{
-				data = [module moduleJS];
-			}
-            
+        if (module == nil) {
+            module = [[moduleClass alloc] _initWithPageContext:self];
             [module setHost:host];
             [module _setName:moduleClassName];
-            // register it
-            [modules setObject:module forKey:path];
+            [modules setObject:module forKey:moduleID];
+            [module autorelease];
+        }
+        
+        // TODO: Support package.json 'main' file identifier which will load instead
+        // of module JS. Currently neither iOS nor Android support package information.
+        if (separatorLocation.location == NSNotFound) { // Indicates toplevel module
+loadNativeJS:
+            if ([module isJSModule]) {
+                data = [module moduleJS];
+            }
+            [self setCurrentURL:[NSURL URLWithString:fullPath relativeToURL:[[self host] baseURL]]];
+        }
+        else {
+            NSString* assetPath = [fullPath substringFromIndex:separatorLocation.location+1];
+            // Handle the degenerate case (supported by MW) where we're loading
+            // module.id/module.id, which should resolve to module.id and mixin.
+            // Rather than create a utility method for this (or C&P if native loading changes)
+            // we use a goto to jump into the if block above.
             
-			[module autorelease];
-		}
-	}
+            if ([assetPath isEqualToString:moduleID]) {
+                goto loadNativeJS;
+            }
+            
+            NSString* filepath = [assetPath stringByAppendingString:@".js"];
+            data = [module loadModuleAsset:filepath];
+            // Have to reset module so that this code doesn't get mixed in and is loaded as pure JS            
+            module = nil; 
+        }
+        
+        if (data == nil && isAbsolute) {
+            // We may have an absolute URL which tried to load from a module instead of a directory. Fix
+            // the fullpath back to the right value, so we can try again.
+            fullPath = [path substringFromIndex:1];
+        }
+        else if (data != nil) {
+            // Set the current URL; it should be the fullPath relative to the host's base URL.
+            [self setCurrentURL:[NSURL URLWithString:[fullPath stringByDeletingLastPathComponent] relativeToURL:[[self host] baseURL]]];
+        }
+    }
 	
 	if (data==nil)
 	{
-		filepath = [NSString stringWithFormat:@"%@.js",path];
-		NSURL *url_ = [TiHost resourceBasedURL:filepath baseURL:NULL];
-		data = [TiUtils loadAppResource:url_];
-		if (data==nil)
-		{
-			data = [NSData dataWithContentsOfURL:url_];
-		}
+		filepath = [fullPath stringByAppendingString:@".js"];
+        NSURL* url_ = [NSURL URLWithString:filepath relativeToURL:[[self host] baseURL]];
+        data = [TiUtils loadAppResource:url_];
+        
+        if (data == nil) {
+            data = [NSData dataWithContentsOfURL:url_];
+        }
+        
+        if (data != nil) {
+            [self setCurrentURL:[NSURL URLWithString:[fullPath stringByDeletingLastPathComponent] relativeToURL:[[self host] baseURL]]];
+        }
 	}
 
 	// we found data, now create the common js module proxy
 	if (data!=nil)
 	{
-        NSString* urlPath = (filepath != nil) ? filepath : path;
+        NSString* urlPath = (filepath != nil) ? filepath : fullPath;
 		NSURL *url_ = [TiHost resourceBasedURL:urlPath baseURL:NULL];
        	const char *urlCString = [[url_ absoluteString] UTF8String];
         KrollWrapper* wrapper = nil;
@@ -842,14 +910,17 @@ CFMutableSetRef	krollBridgeRegistry = nil;
         }
         
 		if (![wrapper respondsToSelector:@selector(replaceValue:forKey:notification:)]) {
-			@throw [NSException exceptionWithName:@"org.samples.kroll" reason:[NSString stringWithFormat:@"Module \"%@\" failed to leave a valid exports object",path] userInfo:nil];
+            [self setCurrentURL:oldURL];
+			@throw [NSException exceptionWithName:@"org.samples.kroll" 
+                                           reason:[NSString stringWithFormat:@"Module \"%@\" failed to leave a valid exports object",path] 
+                                         userInfo:nil];
 		}
 		
 		// register the module if it's pure JS
         if (module == nil) {
             module = (id)wrapper;
             
-            [modules setObject:module forKey:path];
+            [modules setObject:module forKey:fullPath];
             if (filepath!=nil && module!=nil)
             {
                 // uri is optional but we point it to where we loaded it
@@ -880,6 +951,7 @@ CFMutableSetRef	krollBridgeRegistry = nil;
         }
 	}
 	
+    [self setCurrentURL:oldURL];
 	if (module!=nil)
 	{
 		// spec says you must have a read-only id property - we don't

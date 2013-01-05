@@ -1,6 +1,6 @@
 /**
  * Appcelerator Titanium Mobile
- * Copyright (c) 2009-2012 by Appcelerator, Inc. All Rights Reserved.
+ * Copyright (c) 2009-2013 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
  * 
@@ -111,7 +111,11 @@ extern NSString * const TI_APPLICATION_DEPLOYTYPE;
 	{
 		readyState = NetworkClientStateUnsent;
 		autoRedirect = [[NSNumber alloc] initWithBool:YES];
-		validatesSecureCertificate = [[NSNumber alloc] initWithBool:NO];
+#if defined(DEBUG) || defined(DEVELOPER)
+			validatesSecureCertificate = [[NSNumber alloc] initWithBool:NO];
+#else
+			validatesSecureCertificate = [[NSNumber alloc] initWithBool:YES];
+#endif
 	}
 	return self;
 }
@@ -423,6 +427,12 @@ extern NSString * const TI_APPLICATION_DEPLOYTYPE;
 	[request setShouldAttemptPersistentConnection:keepAlive];
 	//handled in send, as now optional
 	//[request setShouldRedirect:YES];
+    
+	//TIMOB-5435 NTLM support
+	[request setUsername:[TiUtils stringValue:[self valueForKey:@"username"]]];
+	[request setPassword:[TiUtils stringValue:[self valueForKey:@"password"]]];
+	[request setDomain:[TiUtils stringValue:[self valueForKey:@"domain"]]];
+    
 	[self _fireReadyStateChange:NetworkClientStateOpened failed:NO];
 	[self _fireReadyStateChange:NetworkClientStateHeaders failed:NO];
 }
@@ -535,9 +545,10 @@ extern NSString * const TI_APPLICATION_DEPLOYTYPE;
 					}
 				}
 			}
-			else if ([arg isKindOfClass:[TiBlob class]])
+			else if ([arg isKindOfClass:[TiBlob class]]
+					 || [arg isKindOfClass:[TiFile class]])
 			{
-				TiBlob *blob = (TiBlob*)arg;
+				TiBlob *blob = [arg isKindOfClass:[TiBlob class]] ? (TiBlob *)arg : [(TiFile *)arg blob];
 				if ([blob type] == TiBlobTypeFile)
 				{
 					// could be large if file so let's tell the 
@@ -550,7 +561,6 @@ extern NSString * const TI_APPLICATION_DEPLOYTYPE;
 					[request appendPostData:data];
 				}
 			}
-			//TODO: support TiFile post 1.4
 		}
 	}
 	

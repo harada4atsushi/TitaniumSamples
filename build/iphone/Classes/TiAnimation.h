@@ -1,6 +1,6 @@
 /**
  * Appcelerator Titanium Mobile
- * Copyright (c) 2009-2012 by Appcelerator, Inc. All Rights Reserved.
+ * Copyright (c) 2009-2013 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
  * 
@@ -65,12 +65,12 @@
 @interface TiAnimation : TiProxy {
 @private
 	NSNumber	*zIndex;
-	NSNumber	*left;
-	NSNumber	*right;
-	NSNumber	*top;
-	NSNumber	*bottom;
-	NSNumber	*width;
-	NSNumber	*height;
+	id  left;
+	id  right;
+	id  top;
+	id  bottom;
+	id  width;
+	id  height;
 	NSNumber	*duration;
 	TiPoint		*center;
 	TiColor		*backgroundColor;
@@ -96,9 +96,8 @@
 	UIView* animatedView;
 		
 	// for autoreverse
-	LayoutConstraint autoreverseLayout;
-	UIView *autoreverseView;
-	id transformMatrix;
+    TiAnimation* reverseAnimation;
+    BOOL isReverse;
 }
 
 /**
@@ -107,19 +106,18 @@
 @property(nonatomic,assign,readwrite) NSObject<TiAnimationDelegate> *delegate;
 
 @property(nonatomic,readwrite,assign) UIView* animatedView;
-@property(nonatomic,readwrite,assign) UIView* autoreverseView;
-@property(nonatomic,readwrite,assign) id transformMatrix;
-@property(nonatomic,readonly) LayoutConstraint autoreverseLayout;
 @property(nonatomic,readonly) ListenerEntry* callback;
+@property(nonatomic,readwrite,assign) TiAnimation* reverseAnimation;
+@property(nonatomic,readwrite,assign) BOOL isReverse;
 
 // animatable properties against what is being animated
 @property(nonatomic,retain,readwrite) NSNumber	*zIndex;
-@property(nonatomic,retain,readwrite) NSNumber	*left;
-@property(nonatomic,retain,readwrite) NSNumber	*right;
-@property(nonatomic,retain,readwrite) NSNumber	*top;
-@property(nonatomic,retain,readwrite) NSNumber	*bottom;
-@property(nonatomic,retain,readwrite) NSNumber	*width;
-@property(nonatomic,retain,readwrite) NSNumber	*height;
+@property(nonatomic,retain,readwrite) id    left;
+@property(nonatomic,retain,readwrite) id    right;
+@property(nonatomic,retain,readwrite) id    top;
+@property(nonatomic,retain,readwrite) id    bottom;
+@property(nonatomic,retain,readwrite) id    width;
+@property(nonatomic,retain,readwrite) id    height;
 @property(nonatomic,retain,readwrite) NSNumber	*duration;
 @property(nonatomic,retain,readwrite) TiPoint	*center;
 @property(nonatomic,retain,readwrite) TiColor	*color;

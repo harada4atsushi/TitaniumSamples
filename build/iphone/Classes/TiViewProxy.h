@@ -1,6 +1,6 @@
 /**
  * Appcelerator Titanium Mobile
- * Copyright (c) 2009-2012 by Appcelerator, Inc. All Rights Reserved.
+ * Copyright (c) 2009-2013 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
  * 
@@ -164,9 +164,9 @@ enum
  */
 @property(nonatomic,readonly) NSArray *children;
 
--(void)startLayout:(id)arg;
--(void)finishLayout:(id)arg;
--(void)updateLayout:(id)arg;
+-(void)startLayout:(id)arg;//Deprecated since 3.0.0
+-(void)finishLayout:(id)arg;//Deprecated since 3.0.0
+-(void)updateLayout:(id)arg;//Deprecated since 3.0.0
 -(void)setTempProperty:(id)propVal forKey:(id)propName;
 -(void)processTempProperties:(NSDictionary*)arg;
 
@@ -580,6 +580,12 @@ enum
 -(void)reposition;	//Todo: Replace
 
 -(BOOL)willBeRelaying;	//Todo: Replace
+
+-(BOOL) widthIsAutoFill;
+-(BOOL) widthIsAutoSize;
+-(BOOL) heightIsAutoFill;
+-(BOOL) heightIsAutoFill;
+-(BOOL) belongsToContext:(id<TiEvaluator>) context;
 
 /**
  Tells the view that its child view size will change.

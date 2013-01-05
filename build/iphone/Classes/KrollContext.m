@@ -1,6 +1,6 @@
 /**
  * Appcelerator Titanium Mobile
- * Copyright (c) 2009-2012 by Appcelerator, Inc. All Rights Reserved.
+ * Copyright (c) 2009-2013 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
  * 
@@ -16,6 +16,7 @@
 
 #include <pthread.h>
 #import "TiDebugger.h"
+#import "TiExceptionHandler.h"
 
 #import "TiUIAlertDialogProxy.h"
 
@@ -132,12 +133,17 @@ TiValueRef ThrowException (TiContextRef ctx, NSString *message, TiValueRef *exce
 	return TiValueMakeUndefined(ctx);
 }
 
-static NSLock *timerIDLock = [[NSLock alloc] init];
-
 static TiValueRef MakeTimer(TiContextRef context, TiObjectRef jsFunction, TiValueRef fnRef, TiObjectRef jsThis, TiValueRef durationRef, BOOL onetime)
 {
+    static dispatch_once_t timerInitializer;
+    static NSLock *timerIDLock = nil;
+    dispatch_once(&timerInitializer, ^{
+        timerIDLock = [[NSLock alloc] init];
+    });
+
 	static double kjsNextTimer = 0;
-	[timerIDLock lock];
+	
+    [timerIDLock lock];
 	double timerID = ++kjsNextTimer;
 	[timerIDLock unlock];
 	
@@ -621,8 +627,15 @@ static TiValueRef StringFormatDecimalCallback (TiContextRef jsContext, TiObjectR
 	if (exception!=NULL)
 	{
 		id excm = [KrollObject toID:context value:exception];
-		DebugLog(@"[ERROR] Script Error = %@",[TiUtils exceptionMessage:excm]);
-		fflush(stderr);
+		TiScriptError *scriptError = nil;
+		if ([excm isKindOfClass:[NSDictionary class]]) {
+			scriptError = [[TiScriptError alloc] initWithDictionary:excm];
+		} else {
+			scriptError = [[TiScriptError alloc] initWithMessage:[excm description] sourceURL:[sourceURL absoluteString] lineNo:0];
+		}
+		[[TiExceptionHandler defaultExceptionHandler] reportScriptError:scriptError];
+        pthread_mutex_unlock(&KrollEntryLock);
+		@throw excm;
 	}
     pthread_mutex_unlock(&KrollEntryLock);
 }
@@ -636,8 +649,13 @@ static TiValueRef StringFormatDecimalCallback (TiContextRef jsContext, TiObjectR
 	if (exception!=NULL)
 	{
 		id excm = [KrollObject toID:context value:exception];
-		DebugLog(@"[ERROR] Script Error = %@",[TiUtils exceptionMessage:excm]);
-		fflush(stderr);
+		TiScriptError *scriptError = nil;
+		if ([excm isKindOfClass:[NSDictionary class]]) {
+			scriptError = [[TiScriptError alloc] initWithDictionary:excm];
+		} else {
+			scriptError = [[TiScriptError alloc] initWithMessage:[excm description] sourceURL:[sourceURL absoluteString] lineNo:0];
+		}
+		[[TiExceptionHandler defaultExceptionHandler] reportScriptError:scriptError];
         
         pthread_mutex_unlock(&KrollEntryLock);
 		@throw excm;
@@ -1079,7 +1097,9 @@ static TiValueRef StringFormatDecimalCallback (TiContextRef jsContext, TiObjectR
 	KrollObject *kroll = [[KrollObject alloc] initWithTarget:nil context:self];
 	TiValueRef krollRef = [KrollObject toValue:self value:kroll];
 	TiStringRef prop = TiStringCreateWithUTF8CString("Kroll");
-	TiObjectSetProperty(context, globalRef, prop, krollRef, NULL, NULL);
+	TiObjectSetProperty(context, globalRef, prop, krollRef, 
+                        kTiPropertyAttributeDontDelete | kTiPropertyAttributeDontEnum | kTiPropertyAttributeReadOnly, 
+                        NULL);
 	TiObjectRef krollObj = TiValueToObject(context, krollRef, NULL);
 	bool set = TiObjectSetPrivate(krollObj, self);
 	assert(set);

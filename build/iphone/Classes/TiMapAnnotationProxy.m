@@ -1,6 +1,6 @@
 /**
  * Appcelerator Titanium Mobile
- * Copyright (c) 2009-2012 by Appcelerator, Inc. All Rights Reserved.
+ * Copyright (c) 2009-2013 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
  * 
@@ -124,6 +124,26 @@
 {
 	[self setValue:[NSNumber numberWithDouble:coordinate.latitude] forUndefinedKey:@"latitude"];
 	[self setValue:[NSNumber numberWithDouble:coordinate.longitude] forUndefinedKey:@"longitude"];
+}
+
+-(void)setLatitude:(id)latitude
+{
+    double curValue = [TiUtils doubleValue:[self valueForUndefinedKey:@"latitude"]];
+    double newValue = [TiUtils doubleValue:latitude];
+    [self replaceValue:latitude forKey:@"latitude" notification:NO];
+    if (newValue != curValue) {
+        [self setNeedsRefreshingWithSelection:YES];
+    }
+}
+
+-(void)setLongitude:(id)longitude
+{
+    double curValue = [TiUtils doubleValue:[self valueForUndefinedKey:@"longitude"]];
+    double newValue = [TiUtils doubleValue:longitude];
+    [self replaceValue:longitude forKey:@"longitude" notification:NO];
+    if (newValue != curValue) {
+        [self setNeedsRefreshingWithSelection:YES];
+    }
 }
 
 // Title and subtitle for use by selection UI.

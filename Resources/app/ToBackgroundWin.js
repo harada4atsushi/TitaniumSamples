@@ -4,7 +4,7 @@ function ToBackgrounWin(rootWin) {
 	});
 	
 	var button1 = Ti.UI.createButton({
-		title:"onPause",
+		title:"button1",
 		width:100, height:50	
 	});
 	button1.addEventListener("click", function() {

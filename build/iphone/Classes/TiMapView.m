@@ -1,6 +1,6 @@
 /**
  * Appcelerator Titanium Mobile
- * Copyright (c) 2009-2012 by Appcelerator, Inc. All Rights Reserved.
+ * Copyright (c) 2009-2013 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
  * 
@@ -76,6 +76,11 @@
         loaded = YES;
     }
     return map;
+}
+
+- (id)accessibilityElement
+{
+	return [self map];
 }
 
 - (NSArray *)customAnnotations
@@ -500,7 +505,7 @@
 - (void)mapView:(MKMapView *)mapView regionDidChangeAnimated:(BOOL)animated
 {
 	if ([self.proxy _hasListeners:@"regionChanged"])
-	{
+	{	//TODO: Deprecate old event
 		region = [mapView region];
 		NSDictionary * props = [NSDictionary dictionaryWithObjectsAndKeys:
 								@"regionChanged",@"type",
@@ -510,14 +515,32 @@
 								[NSNumber numberWithDouble:region.span.longitudeDelta],@"longitudeDelta",nil];
 		[self.proxy fireEvent:@"regionChanged" withObject:props];
 	}
+	if ([self.proxy _hasListeners:@"regionchanged"])
+	{
+		region = [mapView region];
+		NSDictionary * props = [NSDictionary dictionaryWithObjectsAndKeys:
+								@"regionchanged",@"type",
+								[NSNumber numberWithDouble:region.center.latitude],@"latitude",
+								[NSNumber numberWithDouble:region.center.longitude],@"longitude",
+								[NSNumber numberWithDouble:region.span.latitudeDelta],@"latitudeDelta",
+								[NSNumber numberWithDouble:region.span.longitudeDelta],@"longitudeDelta",nil];
+		[self.proxy fireEvent:@"regionchanged" withObject:props];
+	}
+    
+    //TODO:Remove all this code when we drop support for iOS 4.X
+    
     //SELECT ANNOTATION WILL NOT ALWAYS WORK IF THE MAPVIEW IS ANIMATING.
     //THIS FORCES A RESELCTION OF THE ANNOTATIONS WITHOUT SENDING OUT EVENTS
     //SEE TIMOB-8431 (IOS 4.3)
     ignoreClicks = YES;
     NSArray* currentSelectedAnnotations = [[mapView selectedAnnotations] retain];
     for (id annotation in currentSelectedAnnotations) {
-        [mapView deselectAnnotation:annotation animated:NO];
-        [mapView selectAnnotation:annotation animated:NO];
+        //Only Annotations that are hidden at this point should be 
+        //made visible here.
+        if ([mapView viewForAnnotation:annotation].hidden) {
+            [mapView deselectAnnotation:annotation animated:NO];
+            [mapView selectAnnotation:annotation animated:NO];
+        }
     }
     [currentSelectedAnnotations release];
     ignoreClicks = NO;

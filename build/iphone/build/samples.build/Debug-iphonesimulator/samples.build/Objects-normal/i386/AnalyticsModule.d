@@ -1,5 +1,5 @@
 dependencies: \
-  /Users/haradaatsushi/personal/source_code/self/titanium_workspace/TitaniumSamples/build/iphone/Classes/AnalyticsModule.mm \
+  /Users/haradaatsushi/personal/source_code/self/titanium_workspace/TitaniumSamples/build/iphone/Classes/AnalyticsModule.m \
   /Users/haradaatsushi/personal/source_code/self/titanium_workspace/TitaniumSamples/build/iphone/Classes/TiBase.h \
   /Users/haradaatsushi/personal/source_code/self/titanium_workspace/TitaniumSamples/build/iphone/Classes/TiThreading.h \
   /Users/haradaatsushi/personal/source_code/self/titanium_workspace/TitaniumSamples/build/iphone/Classes/TiPublicAPI.h \
@@ -18,6 +18,7 @@ dependencies: \
   /Users/haradaatsushi/personal/source_code/self/titanium_workspace/TitaniumSamples/build/iphone/headers/TiCore/TiContextRefPrivate.h \
   /Users/haradaatsushi/personal/source_code/self/titanium_workspace/TitaniumSamples/build/iphone/Classes/KrollCallback.h \
   /Users/haradaatsushi/personal/source_code/self/titanium_workspace/TitaniumSamples/build/iphone/Classes/KrollObject.h \
+  /Users/haradaatsushi/personal/source_code/self/titanium_workspace/TitaniumSamples/build/iphone/Classes/TiBindingRunLoop.h \
   /Users/haradaatsushi/personal/source_code/self/titanium_workspace/TitaniumSamples/build/iphone/Classes/TiDimension.h \
   /Users/haradaatsushi/personal/source_code/self/titanium_workspace/TitaniumSamples/build/iphone/Classes/WebFont.h \
   /Users/haradaatsushi/personal/source_code/self/titanium_workspace/TitaniumSamples/build/iphone/Classes/TiFile.h \

@@ -1,6 +1,6 @@
 /**
  * Appcelerator Titanium Mobile
- * Copyright (c) 2009-2012 by Appcelerator, Inc. All Rights Reserved.
+ * Copyright (c) 2009-2013 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
  * 
@@ -66,7 +66,7 @@ extern NSString * samples$ModuleRequireFormat;
 + (BOOL)krollBridgeExists:(KrollBridge *)bridge;
 + (KrollBridge *)krollBridgeForThreadName:(NSString *)threadName;
 
--(void)enqueueEvent:(NSString*)type forProxy:(TiProxy *)proxy withObject:(id)obj withSource:(id)source;
+-(void)enqueueEvent:(NSString*)type forProxy:(TiProxy *)proxy withObject:(id)obj;
 -(void)registerProxy:(id)proxy krollObject:(KrollObject *)ourKrollObject;
 -(int)forceGarbageCollectNow;
 

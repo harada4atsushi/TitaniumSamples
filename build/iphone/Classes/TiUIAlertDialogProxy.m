@@ -1,6 +1,6 @@
 /**
  * Appcelerator Titanium Mobile
- * Copyright (c) 2009-2012 by Appcelerator, Inc. All Rights Reserved.
+ * Copyright (c) 2009-2013 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
  * 
@@ -20,6 +20,7 @@ static BOOL alertShowing = NO;
     if (alert != nil) {
         [alertCondition lock];
         alertShowing = NO;
+        persistentFlag = NO;
         [alertCondition broadcast];
         [alertCondition unlock];
     }
@@ -43,6 +44,7 @@ static BOOL alertShowing = NO;
 	{
 		[alertCondition lock];
 		alertShowing = NO;
+        persistentFlag = NO;
 		[alertCondition broadcast];
 		[alertCondition unlock];
 		[self forgetSelf];
@@ -109,7 +111,7 @@ static BOOL alertShowing = NO;
 			}
 			[buttonNames addObject:ok];
 		}
-		
+		persistentFlag = [TiUtils boolValue:[self valueForKey:@"persistent"] def:NO];
 		alert = [[UIAlertView alloc] initWithTitle:[TiUtils stringValue:[self valueForKey:@"title"]]
 												message:[TiUtils stringValue:[self valueForKey:@"message"]] 
 												delegate:self cancelButtonTitle:nil otherButtonTitles:nil];
@@ -120,7 +122,17 @@ static BOOL alertShowing = NO;
 		}
 
 		[alert setCancelButtonIndex:[TiUtils intValue:[self valueForKey:@"cancel"] def:-1]];
-		
+
+		if ([TiUtils isIOS5OrGreater])
+		{
+			int style = [TiUtils intValue:[self valueForKey:@"style"] def:UIAlertViewStyleDefault];
+			[alert setAlertViewStyle:style];
+		}
+		else
+		{
+			NSLog(@"[WARN] Alert dialog `style` property is only supported in iOS 5 or above.");
+		}
+
 		[self retain];
 		[alert show];
 	}
@@ -128,7 +140,9 @@ static BOOL alertShowing = NO;
 
 -(void)suspended:(NSNotification*)note
 {
-	[self hide:[NSDictionary dictionaryWithObject:NUMBOOL(NO) forKey:@"animated"]];
+    if (!persistentFlag) {
+        [self hide:[NSDictionary dictionaryWithObject:NUMBOOL(NO) forKey:@"animated"]];
+    }
 }
 
 #pragma mark AlertView Delegate
@@ -142,12 +156,37 @@ static BOOL alertShowing = NO;
 {
 	if ([self _hasListeners:@"click"])
 	{
-		NSDictionary *event = [NSDictionary dictionaryWithObjectsAndKeys:
+		NSMutableDictionary *event = [NSMutableDictionary dictionaryWithObjectsAndKeys:
 							   [NSNumber numberWithInt:buttonIndex],@"index",
 							   [NSNumber numberWithInt:[alertView cancelButtonIndex]],@"cancel",
 							   nil];
+
+		if ([TiUtils isIOS5OrGreater])
+		{
+			if ([alertView alertViewStyle] == UIAlertViewStylePlainTextInput ||
+				[alertView alertViewStyle] == UIAlertViewStyleSecureTextInput)
+			{
+				[event setObject:[[alertView textFieldAtIndex:0] text] forKey:@"text"];
+			}
+			else if ([alertView alertViewStyle] == UIAlertViewStyleLoginAndPasswordInput)
+			{
+				[event setObject:[[alertView textFieldAtIndex:0] text] forKey:@"login"];
+
+				// If password field never gets focus, `text` property becomes `nil`.
+				NSString *password = [[alertView textFieldAtIndex:1] text];
+				[event setObject:(IS_NULL_OR_NIL(password) ? @"" : password) forKey:@"password"];
+			}
+		}
+
 		[self fireEvent:@"click" withObject:event];
 	}
+}
+
+-(void)alertViewCancel:(UIAlertView *)alertView
+{
+    if (!persistentFlag) {
+        [self hide:[NSDictionary dictionaryWithObject:NUMBOOL(NO) forKey:@"animated"]];
+    }
 }
 
 @end

@@ -1,6 +1,6 @@
 /**
  * Appcelerator Titanium Mobile
- * Copyright (c) 2009-2012 by Appcelerator, Inc. All Rights Reserved.
+ * Copyright (c) 2009-2013 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
  * 
@@ -26,7 +26,7 @@ void InsetScrollViewForKeyboard(UIScrollView * scrollView,CGFloat keyboardTop,CG
 {
 	VerboseLog(@"ScrollView:%@, keyboardTop:%f minimumContentHeight:%f",scrollView,keyboardTop,minimumContentHeight);
 
-	CGRect scrollVisibleRect = [scrollView convertRect:[scrollView bounds] toView:[[TiApp controller] view]];
+	CGRect scrollVisibleRect = [scrollView convertRect:[scrollView bounds] toView:[[TiApp app] topMostView]];
 	//First, find out how much we have to compensate.
 
 	CGFloat obscuredHeight = scrollVisibleRect.origin.y + scrollVisibleRect.size.height - keyboardTop;	
@@ -59,7 +59,7 @@ void OffsetScrollViewForRect(UIScrollView * scrollView,CGFloat keyboardTop,CGFlo
 			scrollView,keyboardTop,minimumContentHeight,
 			responderRect.origin.x,responderRect.origin.y,responderRect.size.width,responderRect.size.height);
 
-	CGRect scrollVisibleRect = [scrollView convertRect:[scrollView bounds] toView:[[TiApp controller] view]];
+	CGRect scrollVisibleRect = [scrollView convertRect:[scrollView bounds] toView:[[TiApp app] topMostView]];
 	//First, find out how much we have to compensate.
 
 	CGFloat obscuredHeight = scrollVisibleRect.origin.y + scrollVisibleRect.size.height - keyboardTop;	
@@ -104,7 +104,7 @@ void ModifyScrollViewForKeyboardHeightAndContentHeightWithResponderRect(UIScroll
 			scrollView,keyboardTop,minimumContentHeight,
 			responderRect.origin.x,responderRect.origin.y,responderRect.size.width,responderRect.size.height);
 
-	CGRect scrollVisibleRect = [scrollView convertRect:[scrollView bounds] toView:[[TiApp controller] view]];
+	CGRect scrollVisibleRect = [scrollView convertRect:[scrollView bounds] toView:[[TiApp app] topMostView]];
 	//First, find out how much we have to compensate.
 
 	CGFloat obscuredHeight = scrollVisibleRect.origin.y + scrollVisibleRect.size.height - keyboardTop;	
@@ -162,7 +162,7 @@ NSArray* listenerArray = nil;
 
 DEFINE_EXCEPTIONS
 
-@synthesize proxy,touchDelegate,backgroundImage;
+@synthesize proxy,touchDelegate,backgroundImage,oldSize;
 
 #pragma mark Internal Methods
 
@@ -302,6 +302,47 @@ DEFINE_EXCEPTIONS
 -(id)transformMatrix
 {
 	return transformMatrix;
+}
+
+- (id)accessibilityElement
+{
+	return self;
+}
+
+#pragma mark - Accessibility API
+
+- (void)setAccessibilityLabel_:(id)accessibilityLabel
+{
+	id accessibilityElement = self.accessibilityElement;
+	if (accessibilityElement != nil) {
+		[accessibilityElement setIsAccessibilityElement:YES];
+		[accessibilityElement setAccessibilityLabel:[TiUtils stringValue:accessibilityLabel]];
+	}
+}
+
+- (void)setAccessibilityValue_:(id)accessibilityValue
+{
+	id accessibilityElement = self.accessibilityElement;
+	if (accessibilityElement != nil) {
+		[accessibilityElement setIsAccessibilityElement:YES];
+		[accessibilityElement setAccessibilityValue:[TiUtils stringValue:accessibilityValue]];
+	}
+}
+
+- (void)setAccessibilityHint_:(id)accessibilityHint
+{
+	id accessibilityElement = self.accessibilityElement;
+	if (accessibilityElement != nil) {
+		[accessibilityElement setIsAccessibilityElement:YES];
+		[accessibilityElement setAccessibilityHint:[TiUtils stringValue:accessibilityHint]];
+	}
+}
+
+- (void)setAccessibilityHidden_:(id)accessibilityHidden
+{
+	if ([TiUtils isIOS5OrGreater]) {
+		self.accessibilityElementsHidden = [TiUtils boolValue:accessibilityHidden def:NO];
+	}
 }
 
 #pragma mark Layout 
@@ -471,13 +512,13 @@ DEFINE_EXCEPTIONS
     
     UIGraphicsBeginImageContextWithOptions(bgImage.size, NO, bgImage.scale);
     CGContextRef imageContext = UIGraphicsGetCurrentContext();
-    CGContextDrawImage(imageContext, CGRectMake(0, 0, bgImage.size.width * bgImage.scale, bgImage.size.height * bgImage.scale), [bgImage CGImage]);
+    CGContextDrawImage(imageContext, CGRectMake(0, 0, bgImage.size.width , bgImage.size.height), [bgImage CGImage]);
     UIImage* translatedImage = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
     
     UIGraphicsBeginImageContextWithOptions(self.bounds.size, NO, bgImage.scale);
     CGContextRef background = UIGraphicsGetCurrentContext();
-    CGRect imageRect = CGRectMake(0, 0, bgImage.size.width * bgImage.scale, bgImage.size.height * bgImage.scale);
+    CGRect imageRect = CGRectMake(0, 0, bgImage.size.width, bgImage.size.height);
     CGContextDrawTiledImage(background, imageRect, [translatedImage CGImage]);
     UIImage* renderedBg = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
@@ -495,6 +536,7 @@ DEFINE_EXCEPTIONS
     else {
         [self backgroundImageLayer].contents = (id)bgImage.CGImage;
         if (bgImage != nil) {
+            [self backgroundImageLayer].contentsScale = [bgImage scale];
             [self backgroundImageLayer].contentsCenter = TiDimensionLayerContentCenter(topCap, leftCap, topCap, leftCap, [bgImage size]);
         }
     }
@@ -632,7 +674,6 @@ DEFINE_EXCEPTIONS
 	{
 		RELEASE_TO_NIL(animation);
 		animation = [newAnimation retain];
-		animating = YES;
 		[animation animate:self];
 	}	
 	else
@@ -640,7 +681,10 @@ DEFINE_EXCEPTIONS
 		DebugLog(@"[WARN] Ti.View.animate() (view %@) could not make animation from: %@", self, newAnimation);
 	}
 }
-
+-(void)animationStarted
+{
+    animating = YES;
+}
 -(void)animationCompleted
 {
 	animating = NO;
@@ -692,7 +736,7 @@ DEFINE_EXCEPTIONS
 	}	
 }
 
--(void)transferProxy:(TiViewProxy*)newProxy
+-(void)transferProxy:(TiViewProxy*)newProxy deep:(BOOL)deep
 {
 	TiViewProxy * oldProxy = (TiViewProxy *)[self proxy];
 	
@@ -714,7 +758,10 @@ DEFINE_EXCEPTIONS
 		for (NSString * thisKey in keySequence)
 		{
 			id newValue = [newProxy valueForKey:thisKey];
-			[self setKrollValue:newValue forKey:thisKey withObject:nil];
+			id oldValue = [oldProxy valueForKey:thisKey];
+			if ((oldValue != newValue) && ![oldValue isEqual:newValue]) {
+				[self setKrollValue:newValue forKey:thisKey withObject:nil];
+			}
 		}
 		
 		for (NSString * thisKey in oldProperties)
@@ -740,6 +787,13 @@ DEFINE_EXCEPTIONS
 			[self setKrollValue:newValue forKey:thisKey withObject:nil];
 		}
 		
+		if (deep) {
+			NSArray *subProxies = [newProxy children];
+			[[oldProxy children] enumerateObjectsUsingBlock:^(TiViewProxy *oldSubProxy, NSUInteger idx, BOOL *stop) {
+				TiViewProxy *newSubProxy = idx < [subProxies count] ? [subProxies objectAtIndex:idx] : nil;
+				[[oldSubProxy view] transferProxy:newSubProxy deep:YES];
+			}];
+		}
 		[oldProxy release];
 		
 		[newProxy setReproxying:NO];
@@ -747,6 +801,34 @@ DEFINE_EXCEPTIONS
 	}
 }
 
+-(BOOL)validateTransferToProxy:(TiViewProxy*)newProxy deep:(BOOL)deep
+{
+	TiViewProxy * oldProxy = (TiViewProxy *)[self proxy];
+	
+	if (oldProxy == newProxy) {
+		return YES;
+	}
+	if (![newProxy isMemberOfClass:[oldProxy class]]) {
+		return NO;
+	}
+	
+	__block BOOL result = YES;
+	if (deep) {
+		NSArray *subProxies = [newProxy children];
+		NSArray *oldSubProxies = [oldProxy children];
+		if ([subProxies count] != [oldSubProxies count]) {
+			return NO;
+		}
+		[oldSubProxies enumerateObjectsUsingBlock:^(TiViewProxy *oldSubProxy, NSUInteger idx, BOOL *stop) {
+			TiViewProxy *newSubProxy = [subProxies objectAtIndex:idx];
+			result = [[oldSubProxy view] validateTransferToProxy:newSubProxy deep:YES];
+			if (!result) {
+				*stop = YES;
+			}
+		}];
+	}
+	return result;
+}
 
 -(id)proxyValueForKey:(NSString *)key
 {
@@ -1054,9 +1136,7 @@ DEFINE_EXCEPTIONS
 			if (touchDelegate == nil) {
 				[proxy fireEvent:@"click" withObject:evt propagate:YES];
 				return;
-			} else {
-				[touchDelegate touchesBegan:touches withEvent:event];
-			}
+			} 
 		} else if ([touch tapCount] == 2 && [proxy _hasListeners:@"dblclick"]) {
 			[proxy fireEvent:@"dblclick" withObject:evt propagate:YES];
 			return;
@@ -1084,11 +1164,6 @@ DEFINE_EXCEPTIONS
 			[proxy fireEvent:@"touchmove" withObject:evt propagate:YES];
 		}
 	}
-	
-	if (touchDelegate!=nil)
-	{
-		[touchDelegate touchesMoved:touches withEvent:event];
-	}
 }
 
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event 
@@ -1112,11 +1187,6 @@ DEFINE_EXCEPTIONS
 			[self handleControlEvents:UIControlEventTouchCancel];
 		}
 	}
-	
-	if (touchDelegate!=nil)
-	{
-		[touchDelegate touchesEnded:touches withEvent:event];
-	}
 }
 
 - (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event 
@@ -1138,11 +1208,6 @@ DEFINE_EXCEPTIONS
 		{
 			[proxy fireEvent:@"touchcancel" withObject:evt propagate:YES];
 		}
-	}
-	
-	if (touchDelegate!=nil)
-	{
-		[touchDelegate touchesCancelled:touches withEvent:event];
 	}
 }
 
@@ -1220,6 +1285,8 @@ DEFINE_EXCEPTIONS
 
 	[self updateTouchHandling];
     if ([event isEqualToString:@"swipe"]) {
+        [[self gestureRecognizerForEvent:@"uswipe"] setEnabled:NO];
+        [[self gestureRecognizerForEvent:@"dswipe"] setEnabled:NO];
         [[self gestureRecognizerForEvent:@"rswipe"] setEnabled:NO];
         [[self gestureRecognizerForEvent:@"lswipe"] setEnabled:NO];
     }

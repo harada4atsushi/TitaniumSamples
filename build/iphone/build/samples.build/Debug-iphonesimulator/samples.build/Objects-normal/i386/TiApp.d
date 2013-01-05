@@ -1,5 +1,5 @@
 dependencies: \
-  /Users/haradaatsushi/personal/source_code/self/titanium_workspace/TitaniumSamples/build/iphone/Classes/TiApp.mm \
+  /Users/haradaatsushi/personal/source_code/self/titanium_workspace/TitaniumSamples/build/iphone/Classes/TiApp.m \
   /Users/haradaatsushi/personal/source_code/self/titanium_workspace/TitaniumSamples/build/iphone/Classes/TiApp.h \
   /Users/haradaatsushi/personal/source_code/self/titanium_workspace/TitaniumSamples/build/iphone/Classes/TiHost.h \
   /Users/haradaatsushi/personal/source_code/self/titanium_workspace/TitaniumSamples/build/iphone/Classes/TiProxy.h \
@@ -16,6 +16,7 @@ dependencies: \
   /Users/haradaatsushi/personal/source_code/self/titanium_workspace/TitaniumSamples/build/iphone/headers/TiCore/TiContextRefPrivate.h \
   /Users/haradaatsushi/personal/source_code/self/titanium_workspace/TitaniumSamples/build/iphone/Classes/KrollCallback.h \
   /Users/haradaatsushi/personal/source_code/self/titanium_workspace/TitaniumSamples/build/iphone/Classes/KrollObject.h \
+  /Users/haradaatsushi/personal/source_code/self/titanium_workspace/TitaniumSamples/build/iphone/Classes/TiBindingRunLoop.h \
   /Users/haradaatsushi/personal/source_code/self/titanium_workspace/TitaniumSamples/build/iphone/Classes/Bridge.h \
   /Users/haradaatsushi/personal/source_code/self/titanium_workspace/TitaniumSamples/build/iphone/Classes/TiStylesheet.h \
   /Users/haradaatsushi/personal/source_code/self/titanium_workspace/TitaniumSamples/build/iphone/Classes/KrollBridge.h \
@@ -54,4 +55,5 @@ dependencies: \
   /Users/haradaatsushi/personal/source_code/self/titanium_workspace/TitaniumSamples/build/iphone/Classes/ASI/ASICacheDelegate.h \
   /Users/haradaatsushi/personal/source_code/self/titanium_workspace/TitaniumSamples/build/iphone/Classes/ASI/ASINetworkQueue.h \
   /Users/haradaatsushi/personal/source_code/self/titanium_workspace/TitaniumSamples/build/iphone/Classes/TiDebugger.h \
-  /Users/haradaatsushi/personal/source_code/self/titanium_workspace/TitaniumSamples/build/iphone/Classes/ApplicationDefaults.h
+  /Users/haradaatsushi/personal/source_code/self/titanium_workspace/TitaniumSamples/build/iphone/Classes/ApplicationDefaults.h \
+  /Users/haradaatsushi/personal/source_code/self/titanium_workspace/TitaniumSamples/build/iphone/Classes/TiExceptionHandler.h

@@ -1,6 +1,6 @@
 /**
  * Appcelerator Titanium Mobile
- * Copyright (c) 2009-2012 by Appcelerator, Inc. All Rights Reserved.
+ * Copyright (c) 2009-2013 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
  * 
@@ -11,6 +11,7 @@
 #import "TiBase.h"
 #import "TiApp.h"
 #import "TiDebugger.h"
+#import "TiExceptionHandler.h"
 
 extern NSString * const TI_APPLICATION_DEPLOYTYPE;
 
@@ -59,7 +60,10 @@ extern NSString * const TI_APPLICATION_DEPLOYTYPE;
 
 -(id)transform:(id)arg
 {
-	return [TiUtils exceptionMessage:arg];
+	if ([arg isKindOfClass:[NSDictionary class]]) {
+		return [[[[TiScriptError alloc] initWithDictionary:arg] autorelease] description];
+	}
+	return arg;
 }
 
 -(void)debug:(NSArray*)args

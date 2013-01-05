@@ -1,6 +1,6 @@
 /**
  * Appcelerator Titanium Mobile
- * Copyright (c) 2009-2012 by Appcelerator, Inc. All Rights Reserved.
+ * Copyright (c) 2009-2013 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
  * 
@@ -196,7 +196,7 @@ const CFOptionFlags writeStreamEventFlags =
     CFReadStreamSetProperty((CFReadStreamRef)input, kCFStreamPropertyShouldCloseNativeSocket, kCFBooleanTrue);
     [self configureSocketForHandle:remoteSocket];
     
-    if (mode && WRITE_MODE) {
+    if (mode & WRITE_MODE) {
         if (streams->outputStream) {
             [configureCondition lock];
             [configureCondition signal];

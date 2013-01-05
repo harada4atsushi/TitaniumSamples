@@ -1,6 +1,6 @@
 /**
  * Appcelerator Titanium Mobile
- * Copyright (c) 2009-2012 by Appcelerator, Inc. All Rights Reserved.
+ * Copyright (c) 2009-2013 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
  * 
@@ -174,27 +174,38 @@
 	return nil;
 }
 
+-(void)loadAssets
+{
+    if (moduleAssets == nil) {
+        NSString *moduleName_ = [NSString stringWithCString:class_getName([self class]) encoding:NSUTF8StringEncoding];
+        NSString *moduleAsset = [NSString stringWithFormat:@"%@Assets",moduleName_];
+        id cls = NSClassFromString(moduleAsset);
+        if (cls!=nil)
+        {
+            moduleAssets = [[cls alloc] init];
+        }
+    }    
+}
+
 -(NSData*)moduleJS
 {
-	NSString *moduleId = [self moduleId];
-	if (moduleId!=nil)
-	{
-		if (moduleAssets==nil)
-		{
-			NSString *moduleName_ = [NSString stringWithCString:class_getName([self class]) encoding:NSUTF8StringEncoding];
-			NSString *moduleAsset = [NSString stringWithFormat:@"%@Assets",moduleName_];
-			id cls = NSClassFromString(moduleAsset);
-			if (cls!=nil)
-			{
-				moduleAssets = [[cls alloc] init];
-			}
-		}
-		if (moduleAssets!=nil)
-		{
-			return [moduleAssets performSelector:@selector(moduleAsset)];
-		}
-	}
+    [self loadAssets];
+    
+    if (moduleAssets!=nil)
+    {
+        return [moduleAssets performSelector:@selector(moduleAsset)];
+    }
 	return nil;
+}
+
+-(NSData*)loadModuleAsset:(NSString*)fromPath
+{
+    [self loadAssets];
+    if ([moduleAssets respondsToSelector:@selector(resolveModuleAsset:)]) {
+        NSString* assetID = [fromPath stringByReplacingOccurrencesOfString:@"." withString:@"_"];
+        return [moduleAssets performSelector:@selector(resolveModuleAsset:) withObject:assetID];
+    }
+    return nil;
 }
 
 -(BOOL)isJSModule

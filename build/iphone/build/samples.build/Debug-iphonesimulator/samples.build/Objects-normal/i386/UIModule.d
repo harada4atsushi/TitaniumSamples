@@ -19,6 +19,7 @@ dependencies: \
   /Users/haradaatsushi/personal/source_code/self/titanium_workspace/TitaniumSamples/build/iphone/headers/TiCore/TiContextRefPrivate.h \
   /Users/haradaatsushi/personal/source_code/self/titanium_workspace/TitaniumSamples/build/iphone/Classes/KrollCallback.h \
   /Users/haradaatsushi/personal/source_code/self/titanium_workspace/TitaniumSamples/build/iphone/Classes/KrollObject.h \
+  /Users/haradaatsushi/personal/source_code/self/titanium_workspace/TitaniumSamples/build/iphone/Classes/TiBindingRunLoop.h \
   /Users/haradaatsushi/personal/source_code/self/titanium_workspace/TitaniumSamples/build/iphone/Classes/WebFont.h \
   /Users/haradaatsushi/personal/source_code/self/titanium_workspace/TitaniumSamples/build/iphone/Classes/TiFile.h \
   /Users/haradaatsushi/personal/source_code/self/titanium_workspace/TitaniumSamples/build/iphone/Classes/TiBuffer.h \
@@ -43,7 +44,7 @@ dependencies: \
   /Users/haradaatsushi/personal/source_code/self/titanium_workspace/TitaniumSamples/build/iphone/Classes/TiTab.h \
   /Users/haradaatsushi/personal/source_code/self/titanium_workspace/TitaniumSamples/build/iphone/Classes/TiTabGroup.h \
   /Users/haradaatsushi/personal/source_code/self/titanium_workspace/TitaniumSamples/build/iphone/Classes/TiUIWindow.h \
-  /Users/haradaatsushi/personal/source_code/self/titanium_workspace/TitaniumSamples/build/iphone/Classes/TiUIiPadDocumentViewerProxy.h \
+  /Users/haradaatsushi/personal/source_code/self/titanium_workspace/TitaniumSamples/build/iphone/Classes/TiUIiOSDocumentViewerProxy.h \
   /Users/haradaatsushi/personal/source_code/self/titanium_workspace/TitaniumSamples/build/iphone/Classes/TiUIiOSProxy.h \
   /Users/haradaatsushi/personal/source_code/self/titanium_workspace/TitaniumSamples/build/iphone/Classes/TiUIiOSAdViewProxy.h \
   /Users/haradaatsushi/personal/source_code/self/titanium_workspace/TitaniumSamples/build/iphone/Classes/TiUIViewProxy.h \

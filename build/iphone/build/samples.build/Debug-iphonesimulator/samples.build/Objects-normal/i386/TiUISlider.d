@@ -16,6 +16,7 @@ dependencies: \
   /Users/haradaatsushi/personal/source_code/self/titanium_workspace/TitaniumSamples/build/iphone/headers/TiCore/TiContextRefPrivate.h \
   /Users/haradaatsushi/personal/source_code/self/titanium_workspace/TitaniumSamples/build/iphone/Classes/KrollCallback.h \
   /Users/haradaatsushi/personal/source_code/self/titanium_workspace/TitaniumSamples/build/iphone/Classes/KrollObject.h \
+  /Users/haradaatsushi/personal/source_code/self/titanium_workspace/TitaniumSamples/build/iphone/Classes/TiBindingRunLoop.h \
   /Users/haradaatsushi/personal/source_code/self/titanium_workspace/TitaniumSamples/build/iphone/Classes/TiAnimation.h \
   /Users/haradaatsushi/personal/source_code/self/titanium_workspace/TitaniumSamples/build/iphone/Classes/TiPoint.h \
   /Users/haradaatsushi/personal/source_code/self/titanium_workspace/TitaniumSamples/build/iphone/Classes/TiDimension.h \
@@ -31,4 +32,11 @@ dependencies: \
   /Users/haradaatsushi/personal/source_code/self/titanium_workspace/TitaniumSamples/build/iphone/Classes/TiGradient.h \
   /Users/haradaatsushi/personal/source_code/self/titanium_workspace/TitaniumSamples/build/iphone/Classes/TiUISliderProxy.h \
   /Users/haradaatsushi/personal/source_code/self/titanium_workspace/TitaniumSamples/build/iphone/Classes/TiViewProxy.h \
-  /Users/haradaatsushi/personal/source_code/self/titanium_workspace/TitaniumSamples/build/iphone/Classes/TiRect.h
+  /Users/haradaatsushi/personal/source_code/self/titanium_workspace/TitaniumSamples/build/iphone/Classes/TiRect.h \
+  /Users/haradaatsushi/personal/source_code/self/titanium_workspace/TitaniumSamples/build/iphone/Classes/ImageLoader.h \
+  /Users/haradaatsushi/personal/source_code/self/titanium_workspace/TitaniumSamples/build/iphone/Classes/ASI/ASIHTTPRequest.h \
+  /Users/haradaatsushi/personal/source_code/self/titanium_workspace/TitaniumSamples/build/iphone/Classes/ASI/ASIHTTPRequestConfig.h \
+  /Users/haradaatsushi/personal/source_code/self/titanium_workspace/TitaniumSamples/build/iphone/Classes/ASI/ASIHTTPRequestDelegate.h \
+  /Users/haradaatsushi/personal/source_code/self/titanium_workspace/TitaniumSamples/build/iphone/Classes/ASI/ASIProgressDelegate.h \
+  /Users/haradaatsushi/personal/source_code/self/titanium_workspace/TitaniumSamples/build/iphone/Classes/ASI/ASICacheDelegate.h \
+  /Users/haradaatsushi/personal/source_code/self/titanium_workspace/TitaniumSamples/build/iphone/Classes/ASI/ASINetworkQueue.h

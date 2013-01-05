@@ -1,6 +1,6 @@
 /**
  * Appcelerator Titanium Mobile
- * Copyright (c) 2009-2012 by Appcelerator, Inc. All Rights Reserved.
+ * Copyright (c) 2009-2013 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
  * 
@@ -21,7 +21,8 @@
 {
     if (self = [super init]) {
         padding = CGRectZero;
-		initialLabelFrame = CGRectZero;
+        initialLabelFrame = CGRectZero;
+        verticalAlign = -1;
     }
     return self;
 }
@@ -74,9 +75,49 @@
 
 -(void)padLabel
 {
-	[label setFrame:initialLabelFrame];
+    if (verticalAlign != -1) {
+        CGSize actualLabelSize = [self sizeForFont:initialLabelFrame.size.width];
+        CGFloat originX = 0;
+        switch (label.textAlignment) {
+            case UITextAlignmentRight:
+                originX = (initialLabelFrame.size.width - actualLabelSize.width);
+                break;
+            case UITextAlignmentCenter:
+                originX = (initialLabelFrame.size.width - actualLabelSize.width)/2.0;
+                break;
+            default:
+                break;
+        }
+
+        if (originX < 0) {
+            originX = 0;
+        }
+        CGRect labelRect = CGRectMake(originX, 0, actualLabelSize.width, actualLabelSize.height);
+        switch (verticalAlign) {
+            case UIControlContentVerticalAlignmentBottom:
+                labelRect.origin.y = initialLabelFrame.size.height - actualLabelSize.height;
+                break;
+            case UIControlContentVerticalAlignmentCenter:
+                labelRect.origin.y = (initialLabelFrame.size.height - actualLabelSize.height)/2;
+                if (labelRect.origin.y < 0) {
+                    labelRect.size.height = (initialLabelFrame.size.height - labelRect.origin.y);
+                }
+                break;
+            default:
+                if (initialLabelFrame.size.height < actualLabelSize.height) {
+                    labelRect.size.height = initialLabelFrame.size.height;
+                }
+                break;
+        }
+
+        [label setFrame:CGRectIntegral(labelRect)];
+    }
+    else {
+        [label setFrame:initialLabelFrame];
+    }
+
     if (repad &&
-        backgroundView != nil && 
+        backgroundView != nil &&
         !CGRectIsEmpty(initialLabelFrame))
     {
         [backgroundView setFrame:CGRectMake(initialLabelFrame.origin.x - padding.origin.x,
@@ -89,7 +130,7 @@
 }
 
 // FIXME: This isn't quite true.  But the brilliant soluton wasn't so brilliant, because it screwed with layout in unpredictable ways.
-//	Sadly, there was a brilliant solution for fixing the blurring here, but it turns out there's a 
+//	Sadly, there was a brilliant solution for fixing the blurring here, but it turns out there's a
 //	quicker fix: Make sure the label itself has an even height and width. Everything else is irrelevant.
 -(void)setCenter:(CGPoint)newCenter
 {
@@ -99,10 +140,10 @@
 -(void)frameSizeChanged:(CGRect)frame bounds:(CGRect)bounds
 {
 	initialLabelFrame = bounds;
-    
+
     repad = YES;
     [self padLabel];
-    
+
     [super frameSizeChanged:frame bounds:bounds];
 }
 
@@ -114,8 +155,14 @@
         label.backgroundColor = [UIColor clearColor];
         label.numberOfLines = 0;
         [self addSubview:label];
+        self.clipsToBounds = YES;
 	}
 	return label;
+}
+
+- (id)accessibilityElement
+{
+	return [self label];
 }
 
 -(void)setHighlighted:(BOOL)newValue
@@ -142,9 +189,20 @@
 
 #pragma mark Public APIs
 
+-(void)setVerticalAlign_:(id)value
+{
+    verticalAlign = [TiUtils intValue:value def:-1];
+    if (verticalAlign < UIControlContentVerticalAlignmentCenter || verticalAlign > UIControlContentVerticalAlignmentBottom) {
+        verticalAlign = -1;
+    }
+    if (label != nil) {
+        [self padLabel];
+    }
+}
 -(void)setText_:(id)text
 {
 	[[self label] setText:[TiUtils stringValue:text]];
+    [self padLabel];
 	[(TiViewProxy *)[self proxy] contentsWillChange];
 }
 
@@ -179,7 +237,7 @@
         [[self label] setAdjustsFontSizeToFitWidth:YES];
         [[self label] setMinimumFontSize:newSize];
     }
-    
+
 }
 
 -(void)setBackgroundImage_:(id)url
@@ -196,7 +254,7 @@
         else {
             backgroundView.image = bgImage;
             [backgroundView setNeedsDisplay];
-            
+
             repad = YES;
             [self padLabel];
         }
@@ -207,7 +265,7 @@
             RELEASE_TO_NIL(backgroundView);
         }
     }
-    
+
     self.backgroundImage = url;
 }
 
@@ -242,6 +300,7 @@
 -(void)setTextAlign_:(id)alignment
 {
 	[[self label] setTextAlignment:[TiUtils textAlignmentValue:alignment]];
+    [self padLabel];
 }
 
 -(void)setShadowColor_:(id)color

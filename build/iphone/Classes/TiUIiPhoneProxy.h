@@ -1,6 +1,6 @@
 /**
  * Appcelerator Titanium Mobile
- * Copyright (c) 2009-2012 by Appcelerator, Inc. All Rights Reserved.
+ * Copyright (c) 2009-2013 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
  * 
@@ -51,6 +51,9 @@
 #ifdef USE_TI_UIIPHONETABLEVIEWCELLSELECTIONSTYLE
 	TiProxy *tableViewCellSelectionStyle;
 #endif
+#ifdef USE_TI_UIIPHONEALERTDIALOGSTYLE
+	TiProxy *alertDialogStyle;
+#endif
 }
 
 #ifdef USE_TI_UIIPHONEANIMATIONSTYLE
@@ -91,6 +94,9 @@
 #endif
 #ifdef USE_TI_UIIPHONETABLEVIEWCELLSELECTIONSTYLE
 @property(nonatomic,readonly) TiProxy* TableViewCellSelectionStyle;
+#endif
+#ifdef USE_TI_UIIPHONEALERTDIALOGSTYLE
+@property(nonatomic, readonly) TiProxy *AlertDialogStyle;
 #endif
 
 

@@ -1,6 +1,6 @@
 /**
  * Appcelerator Titanium Mobile
- * Copyright (c) 2009-2012 by Appcelerator, Inc. All Rights Reserved.
+ * Copyright (c) 2009-2013 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
  * 
@@ -66,6 +66,11 @@ USE_PROXY_FOR_VERIFY_AUTORESIZING
 		[self addSubview:picker];
 	}
 	return picker;
+}
+
+- (id)accessibilityElement
+{
+	return [self picker];
 }
 
 -(BOOL)isDatePicker
@@ -343,11 +348,16 @@ USE_PROXY_FOR_VERIFY_AUTORESIZING
 	else 
 	{
 		UIView* returnView = [rowproxy view];
-		UIView* wrapperView = [[[UIView alloc] initWithFrame:frame]autorelease];
-		[wrapperView setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
-		[wrapperView setBackgroundColor:[UIColor clearColor]];
-		returnView.frame = wrapperView.bounds;
-		[wrapperView addSubview:returnView];
+		#define WRAPPER_TAG 101
+		UIView* wrapperView =[returnView superview];
+		if (wrapperView.tag != WRAPPER_TAG) {
+			wrapperView = [[[UIView alloc] initWithFrame:frame] autorelease];
+			wrapperView.tag = WRAPPER_TAG;
+			[wrapperView setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight];
+			[wrapperView setBackgroundColor:[UIColor clearColor]];
+			returnView.frame = wrapperView.bounds;
+			[wrapperView addSubview:returnView];
+		}
 		return wrapperView;
 	}
 }
@@ -398,13 +408,25 @@ USE_PROXY_FOR_VERIFY_AUTORESIZING
 
 -(void)valueChanged:(id)sender
 {
-	if ([self.proxy _hasListeners:@"change"])
-	{
-		NSDate *date = [(UIDatePicker*)sender date];
-		NSDictionary *event = [NSDictionary dictionaryWithObjectsAndKeys:date,@"value",nil];
-		[self.proxy replaceValue:date forKey:@"value" notification:NO];
-		[self.proxy fireEvent:@"change" withObject:event];
-	}
+    if (sender == picker) {
+        
+        if ([self.proxy _hasListeners:@"change"])
+        {
+            if ( [self isDatePicker] && [(UIDatePicker*)picker datePickerMode] == UIDatePickerModeCountDownTimer ) {
+                double val = [(UIDatePicker*)picker countDownDuration]*1000;
+                NSNumber* newDuration = [NSNumber numberWithDouble:val];
+                NSDictionary *event = [NSDictionary dictionaryWithObjectsAndKeys:newDuration,@"countDownDuration",nil];
+                [self.proxy replaceValue:newDuration forKey:@"countDownDuration" notification:NO];
+                [self.proxy fireEvent:@"change" withObject:event];
+            }
+            else {
+                NSDate *date = [(UIDatePicker*)picker date];
+                NSDictionary *event = [NSDictionary dictionaryWithObjectsAndKeys:date,@"value",nil];
+                [self.proxy replaceValue:date forKey:@"value" notification:NO];
+                [self.proxy fireEvent:@"change" withObject:event];
+            }
+        }
+    }
 }
 
 

@@ -1,6 +1,6 @@
 /**
  * Appcelerator Titanium Mobile
- * Copyright (c) 2009-2012 by Appcelerator, Inc. All Rights Reserved.
+ * Copyright (c) 2009-2013 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
  * 
@@ -98,11 +98,13 @@
 
 -(void)startLayout:(id)arg
 {
+    DebugLog(@"startLayout() method is deprecated since 3.0.0 .");
     updateStarted = YES;
     allowLayoutUpdate = NO;
 }
 -(void)finishLayout:(id)arg
 {
+    DebugLog(@"finishLayout() method is deprecated since 3.0.0 .");
     updateStarted = NO;
     allowLayoutUpdate = YES;
     [self processTempProperties:nil];
@@ -110,6 +112,7 @@
 }
 -(void)updateLayout:(id)arg
 {
+    DebugLog(@"updateLayout() method is deprecated since 3.0.0, use applyProperties() instead.");
     id val = nil;
     if ([arg isKindOfClass:[NSArray class]]) {
         val = [arg objectAtIndex:0];
@@ -126,6 +129,11 @@
     
 }
 
+-(BOOL) belongsToContext:(id<TiEvaluator>) context
+{
+    id<TiEvaluator> myContext = ([self executionContext]==nil)?[self pageContext]:[self executionContext];
+    return (context == myContext);
+}
 
 -(void)add:(id)arg
 {
@@ -1298,13 +1306,15 @@ LAYOUTFLAGS_SETTER(setHorizontalWrap,horizontalWrap,horizontalWrap,[self willCha
 	{
 		destroyLock = [[NSRecursiveLock alloc] init];
 		pthread_rwlock_init(&childrenLock, NULL);
+		bubbleParent = YES;
 	}
 	return self;
 }
 
 -(void)_initWithProperties:(NSDictionary*)properties
 {
-    [self startLayout:nil];
+    updateStarted = YES;
+    allowLayoutUpdate = NO;
 	// Set horizontal layout wrap:true as default 
 	layoutProperties.layoutFlags.horizontalWrap = YES;
 	[self initializeProperty:@"horizontalWrap" defaultValue:NUMBOOL(YES)];
@@ -1376,7 +1386,10 @@ LAYOUTFLAGS_SETTER(setHorizontalWrap,horizontalWrap,horizontalWrap,[self willCha
 		}
 	}
 	[super _initWithProperties:properties];
-    [self finishLayout:nil];
+    updateStarted = NO;
+    allowLayoutUpdate = YES;
+    [self processTempProperties:nil];
+    allowLayoutUpdate = NO;
 
 }
 
@@ -1604,17 +1617,9 @@ LAYOUTFLAGS_SETTER(setHorizontalWrap,horizontalWrap,horizontalWrap,[self willCha
 	
 	// Have to handle the situation in which the proxy's view might be nil... like, for example,
 	// with table rows.  Automagically assume any nil view we're firing an event for is A-OK.
-	if (proxyView == nil || [proxyView interactionEnabled]) {
-		[super fireEvent:type withObject:obj withSource:source propagate:YES];
-		
-		// views support event propagation. we need to check our
-		// parent and if he has the same named listener, we fire
-		// an event and set the source of the event to ourself
-		
-		if (parent!=nil && propagate==YES)
-		{
-			[parent fireEvent:type withObject:obj withSource:source];
-		}
+    // NOTE: We want to fire postlayout events on ANY view, even those which do not allow interactions.
+	if (proxyView == nil || [proxyView interactionEnabled] || [type isEqualToString:@"postlayout"]) {
+		[super fireEvent:type withObject:obj withSource:source propagate:propagate];
 	}
 }
 
@@ -1640,6 +1645,11 @@ LAYOUTFLAGS_SETTER(setHorizontalWrap,horizontalWrap,horizontalWrap,[self willCha
 	{
 		[self.view listenerRemoved:type count:count];
 	}
+}
+
+-(TiProxy *)parentForBubbling
+{
+	return parent;
 }
 
 #pragma mark Layout events, internal and external
@@ -1744,11 +1754,9 @@ if(OSAtomicTestAndSetBarrier(flagBit, &dirtyflags))	\
 	pthread_rwlock_unlock(&childrenLock);
 }
 
--(void)contentsWillChange
+-(BOOL) widthIsAutoSize
 {
     BOOL isAutoSize = NO;
-    BOOL heightIsAutoSize = NO;
-    
     if (TiDimensionIsAutoSize(layoutProperties.width))
     {
         isAutoSize = YES;
@@ -1773,32 +1781,106 @@ if(OSAtomicTestAndSetBarrier(flagBit, &dirtyflags))	\
             isAutoSize = YES;
         }
     }
-    if (!isAutoSize) {
-        if (TiDimensionIsAutoSize(layoutProperties.height))
-        {
-            isAutoSize = YES;
+    return isAutoSize;
+}
+
+-(BOOL) heightIsAutoSize
+{
+    BOOL isAutoSize = NO;
+    if (TiDimensionIsAutoSize(layoutProperties.height))
+    {
+        isAutoSize = YES;
+    }
+    else if (TiDimensionIsAuto(layoutProperties.height) && TiDimensionIsAutoSize([self defaultAutoHeightBehavior:nil]) )
+    {
+        isAutoSize = YES;
+    }
+    else if (TiDimensionIsUndefined(layoutProperties.height) && TiDimensionIsAutoSize([self defaultAutoHeightBehavior:nil]))
+    {
+        int pinCount = 0;
+        if (!TiDimensionIsUndefined(layoutProperties.top) ) {
+            pinCount ++;
         }
-        else if (TiDimensionIsAuto(layoutProperties.height) && TiDimensionIsAutoSize([self defaultAutoHeightBehavior:nil]) )
-        {
-            isAutoSize = YES;
+        if (!TiDimensionIsUndefined(layoutProperties.centerY) ) {
+            pinCount ++;
         }
-        else if (TiDimensionIsUndefined(layoutProperties.height) && TiDimensionIsAutoSize([self defaultAutoHeightBehavior:nil]))
-        {
-            int pinCount = 0;
-            if (!TiDimensionIsUndefined(layoutProperties.top) ) {
-                pinCount ++;
-            }
-            if (!TiDimensionIsUndefined(layoutProperties.centerY) ) {
-                pinCount ++;
-            }
-            if (!TiDimensionIsUndefined(layoutProperties.bottom) ) {
-                pinCount ++;
-            }
-            if (pinCount < 2) {
-                isAutoSize = YES;
-            }
+        if (!TiDimensionIsUndefined(layoutProperties.bottom) ) {
+            pinCount ++;
+        }
+        if (pinCount < 2) {
+            isAutoSize = YES;
         }
     }
+    return isAutoSize;
+}
+
+-(BOOL) widthIsAutoFill
+{
+    BOOL isAutoFill = NO;
+    if (TiDimensionIsAutoFill(layoutProperties.width))
+    {
+        isAutoFill = YES;
+    }
+    else if (TiDimensionIsAuto(layoutProperties.width) && TiDimensionIsAutoFill([self defaultAutoWidthBehavior:nil]) )
+    {
+        isAutoFill = YES;
+    }
+    else if (TiDimensionIsUndefined(layoutProperties.width) && TiDimensionIsAutoFill([self defaultAutoWidthBehavior:nil]))
+    {
+        BOOL centerDefined = NO;
+        int pinCount = 0;
+        if (!TiDimensionIsUndefined(layoutProperties.left) ) {
+            pinCount ++;
+        }
+        if (!TiDimensionIsUndefined(layoutProperties.centerX) ) {
+            centerDefined = YES;
+            pinCount ++;
+        }
+        if (!TiDimensionIsUndefined(layoutProperties.right) ) {
+            pinCount ++;
+        }
+        if ( (pinCount < 2) || (!centerDefined) ){
+            isAutoFill = YES;
+        }
+    }
+    return isAutoFill;
+}
+
+-(BOOL) heightIsAutoFill
+{
+    BOOL isAutoFill = NO;
+    if (TiDimensionIsAutoFill(layoutProperties.height))
+    {
+        isAutoFill = YES;
+    }
+    else if (TiDimensionIsAuto(layoutProperties.height) && TiDimensionIsAutoFill([self defaultAutoHeightBehavior:nil]) )
+    {
+        isAutoFill = YES;
+    }
+    else if (TiDimensionIsUndefined(layoutProperties.height) && TiDimensionIsAutoFill([self defaultAutoHeightBehavior:nil]))
+    {
+        BOOL centerDefined = NO;
+        int pinCount = 0;
+        if (!TiDimensionIsUndefined(layoutProperties.top) ) {
+            pinCount ++;
+        }
+        if (!TiDimensionIsUndefined(layoutProperties.centerY) ) {
+            centerDefined = YES;
+            pinCount ++;
+        }
+        if (!TiDimensionIsUndefined(layoutProperties.bottom) ) {
+            pinCount ++;
+        }
+        if ( (pinCount < 2) || (!centerDefined) ) {
+            isAutoFill = YES;
+        }
+    }
+    return isAutoFill;
+}
+
+-(void)contentsWillChange
+{
+    BOOL isAutoSize = [self widthIsAutoSize] || [self heightIsAutoSize];
     
 	if (isAutoSize)
 	{
@@ -2066,7 +2148,15 @@ if(OSAtomicTestAndSetBarrier(flagBit, &dirtyflags))	\
 
 		positionCache.x += sizeCache.origin.x + sandboxBounds.origin.x;
 		positionCache.y += sizeCache.origin.y + sandboxBounds.origin.y;
-
+        
+        BOOL layoutChanged = (!CGRectEqualToRect([view bounds], sizeCache) || !CGPointEqualToPoint([view center], positionCache));
+        if (!layoutChanged && [view isKindOfClass:[TiUIView class]]) {
+            //Views with flexible margins might have already resized when the parent resized.
+            //So we need to explicitly check for oldSize here which triggers frameSizeChanged
+            CGSize oldSize = [(TiUIView*) view oldSize];
+            layoutChanged = layoutChanged || !(CGSizeEqualToSize(oldSize,sizeCache.size));
+        }
+        
 		[view setAutoresizingMask:autoresizeCache];
 		[view setCenter:positionCache];
 		[view setBounds:sizeCache];
@@ -2080,8 +2170,8 @@ if(OSAtomicTestAndSetBarrier(flagBit, &dirtyflags))	\
             [observer proxyDidRelayout:self];
         }
 
-        if ([self _hasListeners:@"postlayout"]) {
-            [self fireEvent:@"postlayout" withObject:nil];
+        if (layoutChanged && [self _hasListeners:@"postlayout"]) {
+            [self fireEvent:@"postlayout" withObject:nil withSource:self propagate:NO];
         }
 	}
 #ifdef VERBOSE
@@ -2643,6 +2733,44 @@ if(OSAtomicTestAndSetBarrier(flagBit, &dirtyflags))	\
 -(TiDimension)defaultAutoHeightBehavior:(id)unused
 {
     return TiDimensionAutoFill;
+}
+
+#pragma mark - Accessibility API
+
+- (void)setAccessibilityLabel:(id)accessibilityLabel
+{
+	ENSURE_UI_THREAD(setAccessibilityLabel, accessibilityLabel);
+	if ([self viewAttached]) {
+		[[self view] setAccessibilityLabel_:accessibilityLabel];
+	}
+	[self replaceValue:accessibilityLabel forKey:@"accessibilityLabel" notification:NO];
+}
+
+- (void)setAccessibilityValue:(id)accessibilityValue
+{
+	ENSURE_UI_THREAD(setAccessibilityValue, accessibilityValue);
+	if ([self viewAttached]) {
+		[[self view] setAccessibilityValue_:accessibilityValue];
+	}
+	[self replaceValue:accessibilityValue forKey:@"accessibilityValue" notification:NO];
+}
+
+- (void)setAccessibilityHint:(id)accessibilityHint
+{
+	ENSURE_UI_THREAD(setAccessibilityHint, accessibilityHint);
+	if ([self viewAttached]) {
+		[[self view] setAccessibilityHint_:accessibilityHint];
+	}
+	[self replaceValue:accessibilityHint forKey:@"accessibilityHint" notification:NO];
+}
+
+- (void)setAccessibilityHidden:(id)accessibilityHidden
+{
+	ENSURE_UI_THREAD(setAccessibilityHidden, accessibilityHidden);
+	if ([self viewAttached]) {
+		[[self view] setAccessibilityHidden_:accessibilityHidden];
+	}
+	[self replaceValue:accessibilityHidden forKey:@"accessibilityHidden" notification:NO];
 }
 
 @end

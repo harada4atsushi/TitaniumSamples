@@ -1,6 +1,6 @@
 /**
  * Appcelerator Titanium Mobile
- * Copyright (c) 2009-2012 by Appcelerator, Inc. All Rights Reserved.
+ * Copyright (c) 2009-2013 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
  * 
@@ -139,24 +139,6 @@ NSString* const INADDR_ANY_token = @"INADDR_ANY";
 	id arg = [args objectAtIndex:0];
 	NSString *encodedString = [TiUtils stringValue:arg];
 	return [(NSString *)CFURLCreateStringByReplacingPercentEscapesUsingEncoding(NULL, (CFStringRef)encodedString, CFSTR(""), kCFStringEncodingUTF8) autorelease];
-}
-
--(void)addConnectivityListener:(id)args
-{
-    DEPRECATED_REPLACED(@"Network.addConnectivityListener", @"1.8", @"Ti.Network.addEventListener('change',...)");
-	id arg = [args objectAtIndex:0];
-	ENSURE_TYPE(arg,KrollCallback);
-	NSArray *newargs = [NSArray arrayWithObjects:@"change",arg,nil];
-	[self addEventListener:newargs];
-}
-
--(void)removeConnectivityListener:(id)args
-{
-    DEPRECATED_REPLACED(@"Network.removeConnectivityListener", @"1.8", @"Ti.Network.removeEventListener('change',...)");    
-	id arg = [args objectAtIndex:0];
-	ENSURE_TYPE(arg,KrollCallback);
-	NSArray *newargs = [NSArray arrayWithObjects:@"change",arg,nil];
-	[self removeEventListener:newargs];
 }
 
 // Socket submodule

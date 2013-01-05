@@ -1,6 +1,6 @@
 /**
  * Appcelerator Titanium Mobile
- * Copyright (c) 2009-2012 by Appcelerator, Inc. All Rights Reserved.
+ * Copyright (c) 2009-2013 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
  * 
@@ -58,7 +58,8 @@
 - (void)open:(id)args
 {
 	[self rememberSelf];
-	ENSURE_TYPE_OR_NIL(args,NSDictionary);
+	NSDictionary* properties = nil;
+	ENSURE_ARG_OR_NIL_AT_INDEX(properties, args, 0, NSDictionary);
 	Class arrayClass = [NSArray class];
 	NSArray * toArray = [self valueForUndefinedKey:@"toRecipients"];
 	ENSURE_CLASS_OR_NIL(toArray,arrayClass);
@@ -131,7 +132,7 @@
 		}
 	}
 	
-	BOOL animated = [TiUtils boolValue:@"animated" properties:args def:YES];
+	BOOL animated = [TiUtils boolValue:@"animated" properties:properties def:YES];
 	[self retain];
 	[[TiApp app] showModalController:composer animated:animated];
 }

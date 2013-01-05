@@ -1,4 +1,4 @@
-TI_VERSION=2.1.4.GA
+TI_VERSION=3.0.0.GA
 TI_SDK_DIR=/Users/haradaatsushi/Library/Application Support/Titanium/mobilesdk/osx/$(TI_VERSION)/iphone
 TI_APPID=jp.ne.nama.samples
 OTHER_LDFLAGS[sdk=iphoneos*]=$(inherited) -weak_framework iAd

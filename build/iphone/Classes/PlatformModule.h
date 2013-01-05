@@ -1,6 +1,6 @@
 /**
  * Appcelerator Titanium Mobile
- * Copyright (c) 2009-2012 by Appcelerator, Inc. All Rights Reserved.
+ * Copyright (c) 2009-2013 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
  * 
@@ -31,6 +31,7 @@
 @property(readonly,nonatomic) NSString *model;
 @property(readonly,nonatomic) NSString *version;
 @property(readonly,nonatomic) NSString *architecture;
+@property(readonly,nonatomic) NSString *manufacturer;
 @property(readonly,nonatomic) NSString *macaddress;
 @property(readonly,nonatomic) NSNumber *processorCount;
 @property(readonly,nonatomic) NSString *username;

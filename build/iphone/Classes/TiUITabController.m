@@ -1,6 +1,6 @@
 /**
  * Appcelerator Titanium Mobile
- * Copyright (c) 2009-2012 by Appcelerator, Inc. All Rights Reserved.
+ * Copyright (c) 2009-2013 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
  * 
@@ -19,7 +19,6 @@
 -(void)dealloc
 {
 	[(TiWindowProxy *)[self proxy] _associateTab:nil navBar:nil tab:nil];
-	RELEASE_TO_NIL(tab);
 	[super dealloc];
 }
 
@@ -32,7 +31,7 @@
 {
 	if (self = [self initWithViewProxy:window_])
 	{
-		tab = [tab_ retain];
+		tab = tab_;
 		[window_ _associateTab:self navBar:self.navigationController tab:tab];
 	}
 	return self;

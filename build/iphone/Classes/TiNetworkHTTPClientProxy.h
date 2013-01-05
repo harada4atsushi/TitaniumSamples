@@ -1,6 +1,6 @@
 /**
  * Appcelerator Titanium Mobile
- * Copyright (c) 2009-2012 by Appcelerator, Inc. All Rights Reserved.
+ * Copyright (c) 2009-2013 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
  * 
@@ -23,7 +23,7 @@ typedef enum {
 } NetworkClientState;
 
 
-@interface TiNetworkHTTPClientProxy : TiProxy<ASIHTTPRequestDelegate,ASIProgressDelegate> 
+@interface TiNetworkHTTPClientProxy : TiProxy<TI_ASIHTTPRequestDelegate,TI_ASIProgressDelegate> 
 {
 @private
 	ASIFormDataRequest *request;

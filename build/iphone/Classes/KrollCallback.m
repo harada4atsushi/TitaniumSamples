@@ -1,6 +1,6 @@
 /**
  * Appcelerator Titanium Mobile
- * Copyright (c) 2009-2012 by Appcelerator, Inc. All Rights Reserved.
+ * Copyright (c) 2009-2013 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
  * 
@@ -9,6 +9,7 @@
 #import "KrollCallback.h"
 #import "KrollBridge.h"
 #import "KrollObject.h"
+#import "TiExceptionHandler.h"
 
 static NSMutableArray * callbacks;
 static NSLock *callbackLock;
@@ -146,7 +147,14 @@ static NSLock *callbackLock;
 	TiValueRef retVal = TiObjectCallAsFunction(jsContext,function,tp,[args count],_args,&exception);
 	if (exception!=NULL)
 	{
-		DebugLog(@"[ERROR] Exception in event callback: %@",[KrollObject toID:context value:exception]);
+		id excm = [KrollObject toID:context value:exception];
+		TiScriptError *scriptError = nil;
+		if ([excm isKindOfClass:[NSDictionary class]]) {
+			scriptError = [[TiScriptError alloc] initWithDictionary:excm];
+		} else {
+			scriptError = [[TiScriptError alloc] initWithMessage:[excm description] sourceURL:nil lineNo:0];
+		}
+		[[TiExceptionHandler defaultExceptionHandler] reportScriptError:scriptError];
 	}
 	if (top!=NULL)
 	{

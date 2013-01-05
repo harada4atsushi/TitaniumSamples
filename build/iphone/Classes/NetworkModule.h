@@ -1,6 +1,6 @@
 /**
  * Appcelerator Titanium Mobile
- * Copyright (c) 2009-2012 by Appcelerator, Inc. All Rights Reserved.
+ * Copyright (c) 2009-2013 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
  * 
@@ -58,8 +58,6 @@ typedef enum {
 
 -(id)encodeURIComponent:(id)args;
 -(id)decodeURIComponent:(id)args;
--(void)addConnectivityListener:(id)args;
--(void)removeConnectivityListener:(id)args;
 
 #pragma mark Private
 -(void)updateReachabilityStatus;

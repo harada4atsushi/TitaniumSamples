@@ -1,6 +1,6 @@
 /**
  * Appcelerator Titanium Mobile
- * Copyright (c) 2009-2012 by Appcelerator, Inc. All Rights Reserved.
+ * Copyright (c) 2009-2013 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
  * 
@@ -11,6 +11,7 @@
 #import "TiUISlider.h"
 #import "TiUISliderProxy.h"
 #import "TiUtils.h"
+#import "ImageLoader.h"
 
 @implementation TiUISlider
 
@@ -56,6 +57,11 @@
 	return sliderView;
 }
 
+- (id)accessibilityElement
+{
+	return [self sliderView];
+}
+
 -(BOOL)hasTouchableListener
 {
 	// since this guy only works with touch events, we always want them
@@ -70,12 +76,31 @@
 
 -(void)setRightTrack:(id)value forState:(UIControlState)state
 {
-	[[self sliderView] setMaximumTrackImage:[TiUtils stretchableImage:value proxy:[self proxy]] forState:state];
+    NSURL *url = [TiUtils toURL:value proxy:[self proxy]];
+    if (url==nil)
+    {
+        DebugLog(@"[WARN] could not find image: %@",[url absoluteString]);
+        return;
+    }
+    
+    UIImage* ret = [[ImageLoader sharedLoader] loadImmediateStretchableImage:url withLeftCap:rightTrackLeftCap topCap:rightTrackTopCap];
+
+    [[self sliderView] setMaximumTrackImage:ret forState:state];
 }
 
 -(void)setLeftTrack:(id)value forState:(UIControlState)state
 {
-	[[self sliderView] setMinimumTrackImage:[TiUtils stretchableImage:value proxy:[self proxy]] forState:state];
+    NSURL *url = [TiUtils toURL:value proxy:[self proxy]];
+    if (url==nil)
+    {
+        DebugLog(@"[WARN] could not find image: %@",[url absoluteString]);
+        return;
+    }
+    
+    UIImage* ret = [[ImageLoader sharedLoader] loadImmediateStretchableImage:url withLeftCap:leftTrackLeftCap topCap:leftTrackTopCap];
+
+
+    [[self sliderView] setMinimumTrackImage:ret forState:state];
 }
 
 
@@ -180,6 +205,23 @@
 {
 	[self setRightTrack:value forState:UIControlStateDisabled];
 	rightTrackImageState = rightTrackImageState | UIControlStateDisabled;
+}
+
+-(void)setLeftTrackLeftCap_:(id)value
+{
+	leftTrackLeftCap = TiDimensionFromObject(value);
+}
+-(void)setLeftTrackTopCap_:(id)value
+{
+	leftTrackTopCap = TiDimensionFromObject(value);
+}
+-(void)setRightTrackLeftCap_:(id)value
+{
+    rightTrackLeftCap = TiDimensionFromObject(value);
+}
+-(void)setRightTrackTopCap_:(id)value
+{
+	rightTrackTopCap = TiDimensionFromObject(value);
 }
 
 -(void)setMin_:(id)value

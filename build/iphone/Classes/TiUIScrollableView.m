@@ -1,6 +1,6 @@
 /**
  * Appcelerator Titanium Mobile
- * Copyright (c) 2009-2012 by Appcelerator, Inc. All Rights Reserved.
+ * Copyright (c) 2009-2013 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
  * 
@@ -638,10 +638,16 @@
 	[self.proxy replaceValue:NUMINT(pageNum) forKey:@"currentPage" notification:NO];
 	
 	if ([self.proxy _hasListeners:@"scrollEnd"])
-	{
+	{	//TODO: Deprecate old event.
 		[self.proxy fireEvent:@"scrollEnd" withObject:[NSDictionary dictionaryWithObjectsAndKeys:
 											  NUMINT(pageNum),@"currentPage",
 											  [[self proxy] viewAtIndex:pageNum],@"view",nil]]; 
+	}
+	if ([self.proxy _hasListeners:@"scrollend"])
+	{
+		[self.proxy fireEvent:@"scrollend" withObject:[NSDictionary dictionaryWithObjectsAndKeys:
+													   NUMINT(pageNum),@"currentPage",
+													   [[self proxy] viewAtIndex:pageNum],@"view",nil]]; 
 	}
 	currentPage=pageNum;
 	[pageControl setCurrentPage:pageNum];

@@ -184,7 +184,6 @@
 /Users/haradaatsushi/personal/source_code/self/titanium_workspace/TitaniumSamples/build/iphone/build/samples.build/Debug-iphonesimulator/samples.build/Objects-normal/i386/TiUIDashboardViewProxy.o
 /Users/haradaatsushi/personal/source_code/self/titanium_workspace/TitaniumSamples/build/iphone/build/samples.build/Debug-iphonesimulator/samples.build/Objects-normal/i386/TiUIDashboardView.o
 /Users/haradaatsushi/personal/source_code/self/titanium_workspace/TitaniumSamples/build/iphone/build/samples.build/Debug-iphonesimulator/samples.build/Objects-normal/i386/TiUIDashboardItemProxy.o
-/Users/haradaatsushi/personal/source_code/self/titanium_workspace/TitaniumSamples/build/iphone/build/samples.build/Debug-iphonesimulator/samples.build/Objects-normal/i386/TiUIiPadDocumentViewerProxy.o
 /Users/haradaatsushi/personal/source_code/self/titanium_workspace/TitaniumSamples/build/iphone/build/samples.build/Debug-iphonesimulator/samples.build/Objects-normal/i386/TiGradient.o
 /Users/haradaatsushi/personal/source_code/self/titanium_workspace/TitaniumSamples/build/iphone/build/samples.build/Debug-iphonesimulator/samples.build/Objects-normal/i386/ApplicationRouting.o
 /Users/haradaatsushi/personal/source_code/self/titanium_workspace/TitaniumSamples/build/iphone/build/samples.build/Debug-iphonesimulator/samples.build/Objects-normal/i386/TiUIiPadSplitWindow.o
@@ -271,4 +270,10 @@
 /Users/haradaatsushi/personal/source_code/self/titanium_workspace/TitaniumSamples/build/iphone/build/samples.build/Debug-iphonesimulator/samples.build/Objects-normal/i386/TiDOMValidator.o
 /Users/haradaatsushi/personal/source_code/self/titanium_workspace/TitaniumSamples/build/iphone/build/samples.build/Debug-iphonesimulator/samples.build/Objects-normal/i386/TiConsole.o
 /Users/haradaatsushi/personal/source_code/self/titanium_workspace/TitaniumSamples/build/iphone/build/samples.build/Debug-iphonesimulator/samples.build/Objects-normal/i386/Ti3DMatrix.o
+/Users/haradaatsushi/personal/source_code/self/titanium_workspace/TitaniumSamples/build/iphone/build/samples.build/Debug-iphonesimulator/samples.build/Objects-normal/i386/TiUIiOSDocumentViewerProxy.o
 /Users/haradaatsushi/personal/source_code/self/titanium_workspace/TitaniumSamples/build/iphone/build/samples.build/Debug-iphonesimulator/samples.build/Objects-normal/i386/FBFrictionlessRequestSettings.o
+/Users/haradaatsushi/personal/source_code/self/titanium_workspace/TitaniumSamples/build/iphone/build/samples.build/Debug-iphonesimulator/samples.build/Objects-normal/i386/TiUIiPhoneAlertDialogStyleProxy.o
+/Users/haradaatsushi/personal/source_code/self/titanium_workspace/TitaniumSamples/build/iphone/build/samples.build/Debug-iphonesimulator/samples.build/Objects-normal/i386/TiBindingEvent.o
+/Users/haradaatsushi/personal/source_code/self/titanium_workspace/TitaniumSamples/build/iphone/build/samples.build/Debug-iphonesimulator/samples.build/Objects-normal/i386/TiBindingRunLoop.o
+/Users/haradaatsushi/personal/source_code/self/titanium_workspace/TitaniumSamples/build/iphone/build/samples.build/Debug-iphonesimulator/samples.build/Objects-normal/i386/TiBindingTiValue.o
+/Users/haradaatsushi/personal/source_code/self/titanium_workspace/TitaniumSamples/build/iphone/build/samples.build/Debug-iphonesimulator/samples.build/Objects-normal/i386/TiExceptionHandler.o

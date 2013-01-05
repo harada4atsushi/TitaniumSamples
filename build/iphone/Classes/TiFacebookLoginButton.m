@@ -127,6 +127,11 @@
 	[self recenterButton];
 }
 
+- (id)accessibilityElement
+{
+	return button;
+}
+
 
 @end
 #endif

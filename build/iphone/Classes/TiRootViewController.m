@@ -1,6 +1,6 @@
 /**
  * Appcelerator Titanium Mobile
- * Copyright (c) 2009-2012 by Appcelerator, Inc. All Rights Reserved.
+ * Copyright (c) 2009-2013 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
  * 
@@ -525,6 +525,12 @@
     TiViewProxy<TiKeyboardFocusableView> *kfvProxy = (newOrientation != oldOrientation) ? [[keyboardFocusedProxy retain] autorelease] : nil;
 
     [self updateOrientationHistory:newOrientation];
+    
+	UIInterfaceOrientation latestOrientation = [self lastValidOrientation];
+	if ((latestOrientation == oldOrientation) && (latestOrientation == windowOrientation))
+	{
+		return;
+	}
     
     // We appear to do this in order to synchronize rotation animations with the keyboard.
     // But there is an interesting edge case where the status bar sometimes updates its orientation,

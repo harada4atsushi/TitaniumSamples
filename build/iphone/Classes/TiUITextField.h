@@ -1,6 +1,6 @@
 /**
  * Appcelerator Titanium Mobile
- * Copyright (c) 2009-2012 by Appcelerator, Inc. All Rights Reserved.
+ * Copyright (c) 2009-2013 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
  * 
@@ -25,16 +25,17 @@
 	UIView *rightView;
 	
 	BOOL becameResponder;
-    NSInteger maxLength;
+    TiUIView * touchHandler;
 }
 
 @property(nonatomic,readwrite,assign) CGFloat paddingLeft;
 @property(nonatomic,readwrite,assign) CGFloat paddingRight;
 @property(nonatomic,readwrite,assign) CGFloat leftButtonPadding;
 @property(nonatomic,readwrite,assign) CGFloat rightButtonPadding;
-@property(nonatomic,readwrite,assign) NSInteger maxLength;
 
 @property(nonatomic,readonly) BOOL becameResponder;
+
+-(void)setTouchHandler:(TiUIView*)handler;
 
 @end
 

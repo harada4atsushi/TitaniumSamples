@@ -1,6 +1,6 @@
 /**
  * Appcelerator Titanium Mobile
- * Copyright (c) 2009-2012 by Appcelerator, Inc. All Rights Reserved.
+ * Copyright (c) 2009-2012 by samples, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
  * 
@@ -577,6 +577,17 @@ TiOrientationFlags TiOrientationFlagsFromObject(id args)
     }, YES);
 }
 
+-(BOOL)restoreFullScreen
+{
+    if (fullscreenFlag && !restoreFullscreen)
+    {
+        [[UIApplication sharedApplication] setStatusBarHidden:restoreFullscreen withAnimation:UIStatusBarAnimationNone];
+        [[[TiApp app] controller] resizeViewForStatusBarHidden];
+        return YES;
+    } 
+    return NO;
+}
+
 -(void)closeOnUIThread:(id)args
 {
 	[self windowWillClose];
@@ -647,10 +658,10 @@ TiOrientationFlags TiOrientationFlagsFromObject(id args)
 			[closeAnimation animate:self];
 		}
 		  
-		if (fullscreenFlag)
+		if (fullscreenFlag && !restoreFullscreen)
 		{
-			[[UIApplication sharedApplication] setStatusBarHidden:restoreFullscreen];
-			self.view.frame = [[[TiApp app] controller] resizeView];
+			[[UIApplication sharedApplication] setStatusBarHidden:restoreFullscreen withAnimation:UIStatusBarAnimationNone];
+			self.view.frame = [[[TiApp app] controller] resizeViewForStatusBarHidden];
 		} 
  
 		if (closeAnimation!=nil)
@@ -894,6 +905,12 @@ TiOrientationFlags TiOrientationFlagsFromObject(id args)
 	}
 	orientationFlags = newFlags;
 	TiThreadPerformOnMainThread(^{[parentOrientationController childOrientationControllerChangedFlags:self];}, NO);
+}
+
+
+-(NSNumber*)orientation
+{
+	return NUMINT([UIApplication sharedApplication].statusBarOrientation);
 }
 
 

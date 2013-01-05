@@ -1,6 +1,6 @@
 /**
  * Appcelerator Titanium Mobile
- * Copyright (c) 2009-2012 by Appcelerator, Inc. All Rights Reserved.
+ * Copyright (c) 2009-2013 by Appcelerator, Inc. All Rights Reserved.
  * Licensed under the terms of the Apache Public License
  * Please see the LICENSE included with this distribution for details.
  * 
@@ -41,6 +41,13 @@ extern BOOL const TI_APPLICATION_ANALYTICS;
 #endif	
 	[[NSNotificationCenter defaultCenter] removeObserver:self];
 	[super dealloc];
+}
+
+- (void)_configure
+{
+	[super _configure];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(accessibilityVoiceOverStatusChanged:)
+										name:UIAccessibilityVoiceOverStatusChanged object:nil];
 }
 
 -(void)addEventListener:(NSArray*)args
@@ -234,7 +241,7 @@ extern BOOL const TI_APPLICATION_ANALYTICS;
 //To fire the keyboard frame change event.
 -(void)keyboardFrameChanged:(NSNotification*) notification
 {
-    if (![self _hasListeners:@"keyboardFrameChanged"])
+    if (![self _hasListeners:@"keyboardFrameChanged"] && ![self _hasListeners:@"keyboardframechanged"])
     {
         return;
     }
@@ -252,7 +259,7 @@ extern BOOL const TI_APPLICATION_ANALYTICS;
                                 nil];
     
     [self fireEvent:@"keyboardFrameChanged" withObject:event]; 
-    
+    [self fireEvent:@"keyboardframechanged" withObject:event];     
 }
 
 
@@ -406,6 +413,43 @@ extern BOOL const TI_APPLICATION_ANALYTICS;
 	return [[TiHost resourcePath] stringByAppendingPathComponent:args];
 }
 
+- (void)fireSystemEvent:(id)args
+{
+	NSString *eventName;
+	id argument = nil;
+	UIAccessibilityNotifications notification;
+	
+	ENSURE_ARG_COUNT(args, 1);
+	ENSURE_ARG_AT_INDEX(eventName, args, 0, NSString);
+	
+	if ([eventName isEqualToString:self.EVENT_ACCESSIBILITY_ANNOUNCEMENT]) {
+		notification = UIAccessibilityAnnouncementNotification;
+		ENSURE_ARG_COUNT(args, 2);
+		ENSURE_ARG_AT_INDEX(argument, args, 1, NSString);
+	} else if ([eventName isEqualToString:@"accessibilitylayoutchanged"]) {
+		notification = UIAccessibilityLayoutChangedNotification;
+	} else if ([eventName isEqualToString:@"accessibilityscreenchanged"]) {
+		notification = UIAccessibilityScreenChangedNotification;
+	} else {
+		NSLog(@"[WARN] unknown system event: %@",eventName);
+		return;
+	}
+	UIAccessibilityPostNotification(notification, argument);
+}
+
+- (NSNumber *)accessibilityEnabled
+{
+	return NUMBOOL(UIAccessibilityIsVoiceOverRunning());
+}
+
+- (void)accessibilityVoiceOverStatusChanged:(NSNotification *)notification
+{
+	if ([self _hasListeners:@"accessibilitychanged"]) {
+		NSDictionary *event = [NSDictionary dictionaryWithObject:[self accessibilityEnabled] forKey:@"enabled"];
+		[self fireEvent:@"accessibilitychanged" withObject:event];
+	}
+}
+
 -(id)arguments:(id)args
 {
 	return [[TiApp app] launchOptions];
@@ -503,6 +547,8 @@ extern BOOL const TI_APPLICATION_ANALYTICS;
 }
 #endif
 
+MAKE_SYSTEM_STR(EVENT_ACCESSIBILITY_ANNOUNCEMENT,@"accessibilityannouncement");
+MAKE_SYSTEM_STR(EVENT_ACCESSIBILITY_CHANGED,@"accessibilitychanged");
 
 @end
 
