@@ -1,0 +1,52 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+	<head>
+		<title>flot.js</title>
+		<script type="text/javascript" src="jquery.js"></script>
+    	<script type="text/javascript" src="jquery.flot.js"></script>
+	</head>
+    <body>
+	  	<div id="placeholder" style="width:600px;height:400px;"></div>
+		<script>
+			var options = {
+				// X軸のカスタマイズ。
+				// tickFormatter: ラベルの表示形式のカスタマイズ(関数を指定)
+				// tickSize: ラベルの区切り単位
+		        // mode: ラベルの値の種別。"time"を指定すれば時間単位になる。時間もしくは数値のみ可、文字列は不可。
+				xaxis: {
+					tickFormatter: function (val, axis) {
+						//　0日目は不要なので表示しない
+						return val == 0 ? "" : val;
+					},
+		            tickSize: 1
+		            // 今回は数値で区切るので使用しない。
+		            //mode:"time"
+	            },
+	            // グラフ表示カスタマイズ
+	            //　lines: 折れ線
+	            // points: ポイント
+	            series: {
+	            	lines: { show:true },
+		            points: { show:true }
+	        	},
+	        	// グラフ全体のカスタマイズ。グリッド線の色や、背景色のカスタマイズが出来る。
+	        	grid: {
+	        		backgroundColor: { colors: ["#fff", "#eee"] }
+        		}
+	        };
+	        
+	        // 折れ線用データ。複数のグラフも表示可能。
+			var mydata = [[0, 50.2], [1, 50], [2, 48.2], [3, 47.1], [4, 47.6], [5, 45.8], [6, 46], [7, 45.9],
+			              [8, 45.8], [9, 46.3], [10, 46.7], [11, 46.5], [12, 46.5], [13, 46.8], [14, 46.3], [15, 46.1]];
+			var plandata = [[0, 50.2], [15, 46]];
+			
+			$.plot($("#placeholder"), [{
+				label:"推移",
+				data:mydata
+			}, {
+				label:"目標",
+				data:plandata
+			}], options);
+	</script>
+	</body>
+</html>

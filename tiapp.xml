@@ -8,6 +8,10 @@
         <target device="blackberry">false</target>
     </deployment-targets>
     <sdk-version>3.0.0.GA</sdk-version>
+<!--
+    <id>jp.ne.nama.samples</id>
+    <name>samples</name>
+-->
     <id>jp.ne.nama.samples</id>
     <name>samples</name>
     <version>1.0</version>

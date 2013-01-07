@@ -1,1 +1,0 @@
-/Users/haradaatsushi/personal/source_code/self/titanium_workspace/TitaniumSamples/Resources/etc/to_background/jquery.js
