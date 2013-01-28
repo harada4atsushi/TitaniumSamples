@@ -20,7 +20,8 @@ rootWin.add(nav);
 // table data
 var data = [
 	{title:'To Background Win', hasChild:true, path:'/app/ToBackgroundWin'},
-	{title:'Graph', hasChild:true, path:'/app/Graph'}
+	{title:'Graph', hasChild:true, path:'/app/Graph'},
+	{title:'LTSlide20130205', hasChild:true, path:'/app/LTSlide20130205'}
 ];
 
 // リストを生成

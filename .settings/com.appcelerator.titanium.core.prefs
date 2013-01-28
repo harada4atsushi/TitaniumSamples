@@ -1,5 +1,9 @@
 eclipse.preferences.version=1
-provisioning_profiles/development/793C7674-760E-4739-B743-E4BEB733E6ED/appid=jp.ne.nama.*
-provisioning_profiles/development/793C7674-760E-4739-B743-E4BEB733E6ED/filepath=/Users/haradaatsushi/Library/MobileDevice/Provisioning Profiles/793C7674-760E-4739-B743-E4BEB733E6ED.mobileprovision
-provisioning_profiles/development/793C7674-760E-4739-B743-E4BEB733E6ED/name=ultra_googa
-provisioning_profiles/development/793C7674-760E-4739-B743-E4BEB733E6ED/uuid=793C7674-760E-4739-B743-E4BEB733E6ED
+provisioning_profiles/development/1B5411EC-9FC3-4E7A-B6F4-905F17E5F3DA/appid=com.qooga.*
+provisioning_profiles/development/1B5411EC-9FC3-4E7A-B6F4-905F17E5F3DA/filepath=/Users/haradaatsushi/Library/MobileDevice/Provisioning Profiles/1B5411EC-9FC3-4E7A-B6F4-905F17E5F3DA.mobileprovision
+provisioning_profiles/development/1B5411EC-9FC3-4E7A-B6F4-905F17E5F3DA/name=developer_profile
+provisioning_profiles/development/1B5411EC-9FC3-4E7A-B6F4-905F17E5F3DA/uuid=1B5411EC-9FC3-4E7A-B6F4-905F17E5F3DA
+provisioning_profiles/development/F38EE726-6CEE-4190-8FE4-7D7233FE244A/appid=jp.ne.nama.*
+provisioning_profiles/development/F38EE726-6CEE-4190-8FE4-7D7233FE244A/filepath=/Users/haradaatsushi/Library/MobileDevice/Provisioning Profiles/F38EE726-6CEE-4190-8FE4-7D7233FE244A.mobileprovision
+provisioning_profiles/development/F38EE726-6CEE-4190-8FE4-7D7233FE244A/name=ultra_googa
+provisioning_profiles/development/F38EE726-6CEE-4190-8FE4-7D7233FE244A/uuid=F38EE726-6CEE-4190-8FE4-7D7233FE244A

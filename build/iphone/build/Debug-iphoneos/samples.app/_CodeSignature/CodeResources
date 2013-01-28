@@ -38,11 +38,15 @@
 		</data>
 		<key>app.js</key>
 		<data>
-		+cLzp91ZuJbceFJ1wnIRszLpfHg=
+		sSNpm3cwCECtbHfyF6iAv8jbDJM=
 		</data>
 		<key>app/Graph.js</key>
 		<data>
 		+xikX5uNknYY74qewiJ24u5eF9g=
+		</data>
+		<key>app/LTSlide20130205.js</key>
+		<data>
+		ubBLxUePPLhqRLd1vV8Dt4T9ZTg=
 		</data>
 		<key>app/ToBackgroundWin.js</key>
 		<data>
@@ -56,6 +60,14 @@
 		<data>
 		ODVdb3+hlShnmFIx289bjQeRrMU=
 		</data>
+		<key>app/ltslide20130205/HighCapacityImages.js</key>
+		<data>
+		o9xHXRZhqjUfFAc5aut5NPutK9I=
+		</data>
+		<key>app/ltslide20130205/ManyImages.js</key>
+		<data>
+		M6hoMBsWlJfUtiidIKF78PhjhL0=
+		</data>
 		<key>appicon.png</key>
 		<data>
 		cjL/+8PWuiFb179S2UOsvH/xiC4=
@@ -66,7 +78,7 @@
 		</data>
 		<key>embedded.mobileprovision</key>
 		<data>
-		kOeV3JmGl9VeCDikDDiC4kzGMT4=
+		fwfq/sJXMUGD8WvDi/YhZA2HvEI=
 		</data>
 		<key>etc/graph/flot/flot.html</key>
 		<data>
@@ -95,6 +107,82 @@
 		<key>etc/graph/highcharts/jquery.min.js</key>
 		<data>
 		Z1Bm0I0cvuhC5yATSmZg3lzBVDQ=
+		</data>
+		<key>images/ltslide20130205/high_capacity_images/00.jpg</key>
+		<data>
+		WnuC/L7tzx51pCH5U+5FAJ1LlyM=
+		</data>
+		<key>images/ltslide20130205/high_capacity_images/01.jpg</key>
+		<data>
+		UEu7LysNG1/ufjvFTvgr+FkfVAI=
+		</data>
+		<key>images/ltslide20130205/high_capacity_images/02.jpg</key>
+		<data>
+		P99P8whw0sRnbAH/tzfCcJ264R8=
+		</data>
+		<key>images/ltslide20130205/high_capacity_images/03.jpg</key>
+		<data>
+		ozBKZDhWlRPLTPM8mn48Il2svMU=
+		</data>
+		<key>images/ltslide20130205/high_capacity_images/04.jpg</key>
+		<data>
+		qVaWisH2PsR/4oqLTeCpdR51P/M=
+		</data>
+		<key>images/ltslide20130205/high_capacity_images/05.jpg</key>
+		<data>
+		qOP0RHCyFH+J2Ft+V9IW9wd8iLM=
+		</data>
+		<key>images/ltslide20130205/high_capacity_images/06.jpg</key>
+		<data>
+		/vCf8FrUmQ89bAhw+8BZ/E8xW3Q=
+		</data>
+		<key>images/ltslide20130205/high_capacity_images/07.jpg</key>
+		<data>
+		B1RXvSPCeUZPkLMZnPNjlO5aXbs=
+		</data>
+		<key>images/ltslide20130205/high_capacity_images/08.jpg</key>
+		<data>
+		bni5BLXBDmTsZ8k9hfQzKtmVjxA=
+		</data>
+		<key>images/ltslide20130205/many_images/b0.png</key>
+		<data>
+		Md6ZL1lK23tqDpcG7W2pMPdVZhw=
+		</data>
+		<key>images/ltslide20130205/many_images/b1.png</key>
+		<data>
+		TrR4jzOEYuBMSXw8LtI8yJN2lrU=
+		</data>
+		<key>images/ltslide20130205/many_images/b2.png</key>
+		<data>
+		61p9wwmR/v25gWa1G5QJ9YncD+c=
+		</data>
+		<key>images/ltslide20130205/many_images/b3.png</key>
+		<data>
+		+9V5+zHRUNjUvMuAIpRVIc1qMdI=
+		</data>
+		<key>images/ltslide20130205/many_images/b4.png</key>
+		<data>
+		BVMCbYUcgMR+rlb63NR9i4OTFuA=
+		</data>
+		<key>images/ltslide20130205/many_images/b5.png</key>
+		<data>
+		BhzPUlKC72S10KSzyRrMfPcWrLo=
+		</data>
+		<key>images/ltslide20130205/many_images/b6.png</key>
+		<data>
+		hR0tRd12bBRTBmDIyIIUJIod7Sc=
+		</data>
+		<key>images/ltslide20130205/many_images/b7.png</key>
+		<data>
+		UG1cE4reP2DUdmwvWURiJzztPTM=
+		</data>
+		<key>images/ltslide20130205/many_images/b8.png</key>
+		<data>
+		FG0w7r54SdpoHSrB4xtMt+i1FUg=
+		</data>
+		<key>images/ltslide20130205/many_images/b9.png</key>
+		<data>
+		13G7zXIy3TE8gwcKZ1N24CrUAMk=
 		</data>
 		<key>modules/ui/images/badge.png</key>
 		<data>
