@@ -11,11 +11,11 @@ function ManyImages(nav) {
 	});
 	win.add(vBox);
 	
-	for (var i = 0; i < 15; i++) {
+	for (var i = 0; i < 21; i++) {
 		var hBox = Ti.UI.createView({
 			layout: "horizontal",
 			top: 0,
-			width: "100%", height: 30
+			width: "100%", height: 20
 		});
 		vBox.add(hBox);
 	
